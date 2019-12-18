@@ -14,7 +14,7 @@ GLboolean fl = true;
 vector<Point> Vertices;
 
 
-GLint radius = 0;
+GLint radius = 100;
 
 void makeSphere(GLint radius);
 
@@ -118,9 +118,6 @@ void makeSphere(GLint r) {
 
 void drawMySphere() {
 
-    Ellipsoid ellipsoid(A, B, C, 0 * 100);
-    Vertices = ellipsoid.makeEllipsoidMash();
-
     static float alpha = 0;
 
     glTranslatef(x, y, z);
@@ -137,7 +134,7 @@ void drawMySphere() {
 
     int type = (fl ? GL_POLYGON : GL_LINE_STRIP);
 
-    cout << Vertices.size() << endl;
+    //cout << Vertices.size() << endl;
 
     if (Vertices.size() < 4)
         type = GL_POINTS;
