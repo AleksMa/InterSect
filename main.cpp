@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 #include "bits/stdc++.h"
+#include "Point.h"
+#include "Ellipsoid.h"
 using namespace std;
 
 GLfloat a = 0.f, b = 0.f, c = 0.f;
@@ -87,219 +89,24 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
     }
 }
 
-GLfloat project[] = {
-        1.f, 0.f, 0.f, 0.5f,
-        0.f, 1.f, 0.f, 0.f,
-        0.f, 0.f, 1.f, 0.5f,
-        0.f, 0.f, 0.f, 1.f };
-
-void drawCube(GLFWwindow* window) {
-    static float alpha = 0;
-
-
-    glTranslatef(x, y, z);
-
-    glRotatef(a, 1, 0, 0);
-    glRotatef(b, 0, 1, 0);
-    glRotatef(c, 0, 0, 1);
-
-    glTranslatef(-x, -y, -z);
-
-    GLfloat r = 1.f;
-    GLfloat g = 0.f;
-    GLfloat b = 0.f;
-
-    const int type = (fl ? GL_POLYGON : GL_LINE_LOOP);
-
-    GLfloat size = 40.f;				// 1/2 length of one side
-    GLfloat offset = 0.f;				// for debug
-
-    glLineWidth(2.0);
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(x + size + offset, y + -size + offset, z + size);
-    glVertex3f(x + -size + offset, y + -size + offset, z + size);
-    glVertex3f(x + -size + offset, y + size + offset, z + size);
-    glVertex3f(x + size + offset, y + size + offset, z + size);
-    glEnd();
-
-    r = 0.f;
-    g = 1.f;
-    b = 0.f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(x + size + offset, y + -size + offset, z + -size);
-    glVertex3f(x + -size + offset, y + -size + offset, z + -size);
-    glVertex3f(x + -size + offset, y + size + offset, z + -size);
-    glVertex3f(x + size + offset, y + size + offset, z + -size);
-    glEnd();
-
-    r = 0.f;
-    g = 0.f;
-    b = 1.f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(x + size + offset, y + -size + offset, z + -size);
-    glVertex3f(x + size + offset, y + -size + offset, z + size);
-    glVertex3f(x + size + offset, y + size + offset, z + size);
-    glVertex3f(x + size + offset, y + size + offset, z + -size);
-    glEnd();
-
-    r = 0.99f;
-    g = 0.89f;
-    b = 0.01f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(x + -size + offset, y + -size + offset, z + -size);
-    glVertex3f(x + -size + offset, y + -size + offset, z + size);
-    glVertex3f(x + -size + offset, y + size + offset, z + size);
-    glVertex3f(x + -size + offset, y + size + offset, z + -size);
-    glEnd();
-
-    r = 0.5f;
-    g = 0.f;
-    b = 0.5f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(x + -size + offset, y + size + offset, z + -size);
-    glVertex3f(x + -size + offset, y + size + offset, z + size);
-    glVertex3f(x + size + offset, y + size + offset, z + size);
-    glVertex3f(x + size + offset, y + size + offset, z + -size);
-    glEnd();
-
-    r = 1.f;
-    g = 0.4f;
-    b = 0.8f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(x + -size + offset, y + -size + offset, z + -size);
-    glVertex3f(x + -size + offset, y + -size + offset, z + size);
-    glVertex3f(x + size + offset, y + -size + offset, z + size);
-    glVertex3f(x + size + offset, y + -size + offset, z + -size);
-    glEnd();
-
-}
-
-// =======================
-
-void drawStaticCube(GLFWwindow* window) {
-    const int type = GL_POLYGON;
-
-    GLint windowWidth, windowHeight;
-    glfwGetWindowSize(window, &windowWidth, &windowHeight);
-
-    GLfloat r = 1.f;
-    GLfloat g = 0.f;
-    GLfloat b = 0.f;
-
-    GLfloat size = 10.f;
-    GLfloat offsetX = -windowWidth / 3 + 3 * size;
-    GLfloat offsetY = -windowHeight / 3 + 3 * size;
-
-
-    glLineWidth(2.0);
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(size + offsetX, -size + offsetY, size);
-    glVertex3f(-size + offsetX, -size + offsetY, size);
-    glVertex3f(-size + offsetX, size + offsetY, size);
-    glVertex3f(size + offsetX, size + offsetY, size);
-    glEnd();
-
-    r = 0.f;
-    g = 1.f;
-    b = 0.f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(size + offsetX, -size + offsetY, -size);
-    glVertex3f(-size + offsetX, -size + offsetY, -size);
-    glVertex3f(-size + offsetX, size + offsetY, -size);
-    glVertex3f(size + offsetX, size + offsetY, -size);
-    glEnd();
-
-    r = 0.f;
-    g = 0.f;
-    b = 1.f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(size + offsetX, -size + offsetY, -size);
-    glVertex3f(size + offsetX, -size + offsetY, size);
-    glVertex3f(size + offsetX, size + offsetY, size);
-    glVertex3f(size + offsetX, size + offsetY, -size);
-    glEnd();
-
-    r = 0.99f;
-    g = 0.89f;
-    b = 0.01f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(-size + offsetX, -size + offsetY, -size);
-    glVertex3f(-size + offsetX, -size + offsetY, size);
-    glVertex3f(-size + offsetX, size + offsetY, size);
-    glVertex3f(-size + offsetX, size + offsetY, -size);
-    glEnd();
-
-    r = 0.5f;
-    g = 0.f;
-    b = 0.5f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(-size + offsetX, size + offsetY, -size);
-    glVertex3f(-size + offsetX, size + offsetY, size);
-    glVertex3f(size + offsetX, size + offsetY, size);
-    glVertex3f(size + offsetX, size + offsetY, -size);
-    glEnd();
-
-    r = 1.f;
-    g = 0.4f;
-    b = 0.8f;
-    glBegin(type);
-    glColor3f(r, g, b);
-    glVertex3f(-size + offsetX, -size + offsetY, -size);
-    glVertex3f(-size + offsetX, -size + offsetY, size);
-    glVertex3f(size + offsetX, -size + offsetY, size);
-    glVertex3f(size + offsetX, -size + offsetY, -size);
-    glEnd();
-}
-
-
-
+//GLfloat project[] = {
+//        1.f, 0.f, 0.f, 0.5f,
+//        0.f, 1.f, 0.f, 0.f,
+//        0.f, 0.f, 1.f, 0.5f,
+//        0.f, 0.f, 0.f, 1.f };
 
 vector <struct Point> Vertices;
 
-struct Point {
-    GLfloat x, y, z;
-    Point(GLfloat x, GLfloat y, GLfloat z) : x(x), y(y), z(z) {};
-};
 
 GLfloat A = 1.5, B = 1, C = 1.7;
 
 
 void makeSphere(GLint r) {
-    const GLdouble pi = 3.14159265358979323846;
-    Vertices.clear();
-    Vertices.push_back(Point(0.f, B * r, 0.f));
-    for (int i = N - 1; i >= 0; i--) {
-        GLfloat y = r * i / N;
-        GLfloat radius = sqrt(static_cast<GLfloat>(r*r) - (y*y));
-        for (int j = 0; j < M; j++) {
-            Vertices.push_back(Point(A * radius * cos(j * pi * 2 / M),  B * y, C * radius * sin(j * pi * 2 / M)));
-            //Vertices.push_back(Point(radius * cos(j * pi * 2 / M), - radius / M * i, radius * sin(j * pi * 2 / M)));
-        }
-    }
-
-    for (int i = 0; i < N; i++) {
-        GLfloat y = r * i / N;
-        GLfloat radius = sqrt(static_cast<GLfloat>(r*r) - (y*y));
-        for (int j = 0; j < M; j++) {
-            Vertices.push_back(Point(A * radius * cos(j * pi * 2 / M), B * -y, C * radius * sin(j * pi * 2 / M)));
-        }
-    }
-
-    Vertices.push_back(Point(0.f, B * -r, 0.f));
+    Ellipsoid ellipsoid(A, B, C, x, y, z, r, N, M);
+    Vertices = ellipsoid.makeEllipsoid();
 }
 
-void drawMySphere(GLint radius) {
+void drawMySphere() {
 
     static float alpha = 0;
 
@@ -399,26 +206,24 @@ void display(GLFWwindow* window) {
         glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
         glViewport(0, 0, windowWidth, windowHeight);
 
-        glClearColor(0.7, 1, 1, 1.0);
+        //glClearColor(0.7, 1, 1, 1.0);
+        glClearColor(0, 0, 0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glMatrixMode(GL_PROJECTION);
 
         glLoadIdentity();
 
-        glMultMatrixf(project);
+        //glMultMatrixf(project);
 
         glOrtho(-windowWidth / 2, windowWidth / 2, -windowHeight / 2,
                 windowHeight / 2, -(windowWidth + windowHeight) / 4, (windowWidth + windowHeight) / 4);
 
         glMatrixMode(GL_MODELVIEW_MATRIX);
 
-
-
-        drawStaticCube(window);
         //drawCube(window);
 
-        drawMySphere(radius);
+        drawMySphere();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
