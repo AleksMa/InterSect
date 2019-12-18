@@ -10,7 +10,7 @@ Ellipsoid::Ellipsoid(float a, float b, float c, float d) : A(a), B(b), C(c), D(d
 Ellipsoid::Ellipsoid(float a, float b, float c, float cX, float cY, float cZ, int R, int n, int m) : A(a), B(b), C(c), cX(cX),
                                                                                               cY(cY), cZ(cZ), R(R), N(n),
                                                                                               M(m) {}
-vector<class Point> Ellipsoid::makeEllipsoidVerticies() {
+vector<Point> Ellipsoid::makeEllipsoidVerticies() {
     R = int(sqrt(D));
     N = R / 20;
     M = 20;
@@ -38,7 +38,7 @@ vector<class Point> Ellipsoid::makeEllipsoidVerticies() {
     return Vertices;
 }
 
-vector<class Point> Ellipsoid::makeEllipsoidMash() {
+vector<Point> Ellipsoid::makeEllipsoidMash() {
     vector<Point> Vertices = this->makeEllipsoidVerticies();
     vector<Point> finalVerticies;
     for (int i = 0; i < M; i++) {
@@ -70,6 +70,9 @@ vector<class Point> Ellipsoid::makeEllipsoidMash() {
         finalVerticies.push_back(p);
         finalVerticies.push_back(p1);
         finalVerticies.push_back(p2);
+    }
+    if (this->R == 0) {
+        return vector<Point>{finalVerticies[0]};
     }
     return finalVerticies;
 }

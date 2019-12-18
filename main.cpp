@@ -11,8 +11,10 @@ GLfloat a = 0.f, b = 0.f, c = 0.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
 GLboolean fl = true;
 
+vector<Point> Vertices;
 
-GLint radius = 100;
+
+GLint radius = 0;
 
 void makeSphere(GLint radius);
 
@@ -103,7 +105,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
 //        0.f, 0.f, 1.f, 0.5f,
 //        0.f, 0.f, 0.f, 1.f };
 
-vector<struct Point> Vertices;
+
 
 
 GLfloat A = 1.5, B = 1, C = 1.7;
@@ -115,6 +117,9 @@ void makeSphere(GLint r) {
 }
 
 void drawMySphere() {
+
+    Ellipsoid ellipsoid(A, B, C, 0 * 100);
+    Vertices = ellipsoid.makeEllipsoidMash();
 
     static float alpha = 0;
 
@@ -130,10 +135,14 @@ void drawMySphere() {
     GLfloat g = 0.f;
     GLfloat b = 0.f;
 
-    const int type = (fl ? GL_POLYGON : GL_LINE_STRIP);
+    int type = (fl ? GL_POLYGON : GL_LINE_STRIP);
 
+    cout << Vertices.size() << endl;
 
+    if (Vertices.size() < 4)
+        type = GL_POINTS;
     glColor4f(0.f, 1.f, 0.f, 0.5);
+    glPointSize(4);
     glLineWidth(1);
 
     //glEnable(GL_BLEND); //Enable blending.
@@ -150,17 +159,17 @@ void drawMySphere() {
 GLFWwindow *initWindow(const int resX, const int resY) {
     if (!glfwInit()) {
         fprintf(stderr, "Failed to initialize GLFW\n");
-        return NULL;
+        return nullptr;
     }
 
     glfwWindowHint(GLFW_SAMPLES, 4);
 
     GLFWwindow *window = glfwCreateWindow(resX, resY, "TEST", NULL, NULL);
 
-    if (window == NULL) {
+    if (window == nullptr) {
         fprintf(stderr, "Failed to open GLFW window.\n");
         glfwTerminate();
-        return NULL;
+        return nullptr;
     }
 
     glfwMakeContextCurrent(window);
@@ -212,7 +221,7 @@ void display(GLFWwindow *window) {
 
 int main(int argc, char **argv) {
     GLFWwindow *window = initWindow(800, 600);
-    if (NULL != window) {
+    if (nullptr != window) {
         display(window);
     }
     glfwDestroyWindow(window);

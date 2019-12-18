@@ -23,7 +23,7 @@ public:
     Ellipsoid(float a, float b, float c, float cX, float cY, float cZ, int R, int n, int m);
 
     vector<Point> makeEllipsoidVerticies();
-    vector<class Point> makeEllipsoidMash();
+    vector<Point> makeEllipsoidMash();
 
 };
 
