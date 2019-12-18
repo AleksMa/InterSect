@@ -4,20 +4,19 @@
 #include "bits/stdc++.h"
 #include "Point.h"
 #include "Ellipsoid.h"
+
 using namespace std;
 
 GLfloat a = 0.f, b = 0.f, c = 0.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
-GLboolean  fl = true;
+GLboolean fl = true;
 
 
-GLint N = 5;
-GLint M = 20;
 GLint radius = 100;
 
 void makeSphere(GLint radius);
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action,
+void key_callback(GLFWwindow *window, int key, int scancode, int action,
                   int mods) {
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
@@ -26,15 +25,24 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
             fl = !fl;
 
         if (key == GLFW_KEY_EQUAL) {
-            N += 1;
-            M += 5;
+//            N += 1;
+//            M += 5;
             makeSphere(radius);
         }
         if (key == GLFW_KEY_MINUS) {
-            if (N > 1)
-                N -= 1;
-            if (M > 1)
-                M -= 5;
+//            if (N > 1)
+//                N -= 1;
+//            if (M > 1)
+//                M -= 5;
+            makeSphere(radius);
+        }
+        if (key == GLFW_KEY_9) {
+            if (radius > 10)
+                radius -= 10;
+            makeSphere(radius);
+        }
+        if (key == GLFW_KEY_0) {
+            radius += 10;
             makeSphere(radius);
         }
     }
@@ -95,15 +103,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
 //        0.f, 0.f, 1.f, 0.5f,
 //        0.f, 0.f, 0.f, 1.f };
 
-vector <struct Point> Vertices;
+vector<struct Point> Vertices;
 
 
 GLfloat A = 1.5, B = 1, C = 1.7;
 
 
 void makeSphere(GLint r) {
-    Ellipsoid ellipsoid(A, B, C, x, y, z, r, N, M);
-    Vertices = ellipsoid.makeEllipsoid();
+    Ellipsoid ellipsoid(A, B, C, r * r);
+    Vertices = ellipsoid.makeEllipsoidMash();
 }
 
 void drawMySphere() {
@@ -122,54 +130,24 @@ void drawMySphere() {
     GLfloat g = 0.f;
     GLfloat b = 0.f;
 
-    const int type = (fl ? GL_POLYGON : GL_LINE_LOOP);
+    const int type = (fl ? GL_POLYGON : GL_LINE_STRIP);
 
 
-
-    glColor3f(0.f, 1.f, 0.f);
+    glColor4f(0.f, 1.f, 0.f, 0.5);
     glLineWidth(1);
 
+    //glEnable(GL_BLEND); //Enable blending.
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
 
-    for (int i = 0; i < M; i++) {
-        glBegin(type);
-        Point p = Vertices[0];
-        Point p1 = Vertices[i + 1], p2 = Vertices[(i == M - 1 ? 1 : i + 2)];
+    glBegin(type);
+    for (auto p : Vertices) {
         glVertex3f(p.x + x, p.y + y, p.z + z);
-        glVertex3f(p1.x + x, p1.y + y, p1.z + z);
-        glVertex3f(p2.x + x, p2.y + y, p2.z + z);
-        glEnd();
     }
-
-
-
-    for (int i = 0; i < 2 * N - 1; i++) {
-        for (int j = 0; j < M; j++) {
-            glBegin(type);
-            Point p1 = Vertices[M * i + j + 1], p2 = Vertices[(j == M - 1 ? M * i + 1 : M * i + j + 2)];
-            Point p3 = Vertices[M * (i + 1) + j + 1], p4 = Vertices[(j == M - 1 ? M * (i + 1) + 1 : M * (i + 1) + j + 2)];
-            glVertex3f(p1.x + x, p1.y + y, p1.z + z);
-            glVertex3f(p3.x + x, p3.y + y, p3.z + z);
-            glVertex3f(p4.x + x, p4.y + y, p4.z + z);
-            glVertex3f(p2.x + x, p2.y + y, p2.z + z);
-            glEnd();
-        }
-    }
-
-    for (int i = 0; i < M; i++) {
-        glBegin(type);
-        Point p = Vertices[Vertices.size() - 1];
-        Point p1 = Vertices[M * (2 * N - 1) + i + 1], p2 = Vertices[(i == M - 1 ? M * (2 * N - 1) + 1 : M * (2 * N - 1) + i + 2)];
-        glVertex3f(p.x + x, p.y + y, p.z + z);
-        glVertex3f(p1.x + x, p1.y + y, p1.z + z);
-        glVertex3f(p2.x + x, p2.y + y, p2.z + z);
-        glEnd();
-    }
-
+    glEnd();
 }
 
 
-
-GLFWwindow* initWindow(const int resX, const int resY) {
+GLFWwindow *initWindow(const int resX, const int resY) {
     if (!glfwInit()) {
         fprintf(stderr, "Failed to initialize GLFW\n");
         return NULL;
@@ -177,7 +155,7 @@ GLFWwindow* initWindow(const int resX, const int resY) {
 
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    GLFWwindow* window = glfwCreateWindow(resX, resY, "TEST", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(resX, resY, "TEST", NULL, NULL);
 
     if (window == NULL) {
         fprintf(stderr, "Failed to open GLFW window.\n");
@@ -196,8 +174,7 @@ GLFWwindow* initWindow(const int resX, const int resY) {
 }
 
 
-
-void display(GLFWwindow* window) {
+void display(GLFWwindow *window) {
 
     makeSphere(radius);
 
@@ -233,8 +210,8 @@ void display(GLFWwindow* window) {
 }
 
 
-int main(int argc, char** argv) {
-    GLFWwindow* window = initWindow(800, 600);
+int main(int argc, char **argv) {
+    GLFWwindow *window = initWindow(800, 600);
     if (NULL != window) {
         display(window);
     }
