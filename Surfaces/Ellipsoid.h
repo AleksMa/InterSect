@@ -12,7 +12,6 @@ using namespace std;
 class Ellipsoid {
 public:
     float A, B, C, D;
-    int R;
 
     int N, M;
 

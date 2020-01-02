@@ -156,7 +156,7 @@ GLFWwindow *initWindow(const int resX, const int resY) {
 
 void display(GLFWwindow *window) {
 
-    vector<Point> vertices = makeSphere(100, 1.7, 1, 1.5);
+    vector<Point> vertices = makeSphere(100, 200, 100, 150);
 
     while (!glfwWindowShouldClose(window)) {
         GLint windowWidth, windowHeight;
