@@ -12,7 +12,7 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(GLEW REQUIRED STATIC)
 
-add_executable(InterSect main.cpp Ellipsoid.cpp Ellipsoid.h Point.cpp Point.h)
+add_executable(InterSect main.cpp Surfaces/Ellipsoid.cpp Surfaces/Ellipsoid.h Primary/Point.cpp Primary/Point.h)
 
 target_link_libraries(InterSect glfw ${OPENGL_LIBRARIES} ${GLFW3_LIBRARY}
         ${GLEW_LIBRARY})

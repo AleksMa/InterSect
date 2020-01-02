@@ -2,51 +2,26 @@
 #include <iostream>
 #include <vector>
 #include "bits/stdc++.h"
-#include "Point.h"
-#include "Ellipsoid.h"
+#include "Primary/Point.h"
+#include "Surfaces/Ellipsoid.h"
 
 using namespace std;
 
-GLfloat a = 0.f, b = 0.f, c = 0.f;
+GLfloat a = 20.f, b = 0.f, c = 0.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
-GLboolean fl = true;
-
-vector<Point> Vertices;
+GLboolean fl = false;
 
 
-GLint radius = 100;
-
-void makeSphere(GLint radius);
+//GLint radius = 100;
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action,
                   int mods) {
     if (action == GLFW_PRESS) {
-        if (key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, GL_TRUE);
+        if (key == GLFW_KEY_ESCAPE)
+            glfwSetWindowShouldClose(window, GL_TRUE);
 
         if (key == GLFW_KEY_ENTER || key == GLFW_KEY_SPACE)
             fl = !fl;
-
-        if (key == GLFW_KEY_EQUAL) {
-//            N += 1;
-//            M += 5;
-            makeSphere(radius);
-        }
-        if (key == GLFW_KEY_MINUS) {
-//            if (N > 1)
-//                N -= 1;
-//            if (M > 1)
-//                M -= 5;
-            makeSphere(radius);
-        }
-        if (key == GLFW_KEY_9) {
-            if (radius > 10)
-                radius -= 10;
-            makeSphere(radius);
-        }
-        if (key == GLFW_KEY_0) {
-            radius += 10;
-            makeSphere(radius);
-        }
     }
 
     if (action = GLFW_REPEAT) {
@@ -105,18 +80,17 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
 //        0.f, 0.f, 1.f, 0.5f,
 //        0.f, 0.f, 0.f, 1.f };
 
-
-
-
-GLfloat A = 1.5, B = 1, C = 1.7;
-
-
-void makeSphere(GLint r) {
+vector<Point> makeSphere(GLint r, float A, float B, float C) {
     Ellipsoid ellipsoid(A, B, C, r * r);
-    Vertices = ellipsoid.makeEllipsoidMash();
+    return ellipsoid.makeEllipsoidMash();
 }
 
-void drawMySphere() {
+vector<Point> makeParaboloid(GLint r, float A, float B, float C) {
+    Ellipsoid ellipsoid(A, B, C, r * r);
+    return ellipsoid.makeEllipsoidMash();
+}
+
+void drawMySphere(vector<Point> Vertices) {
 
     static float alpha = 0;
 
@@ -182,7 +156,7 @@ GLFWwindow *initWindow(const int resX, const int resY) {
 
 void display(GLFWwindow *window) {
 
-    makeSphere(radius);
+    vector<Point> vertices = makeSphere(100, 1.7, 1, 1.5);
 
     while (!glfwWindowShouldClose(window)) {
         GLint windowWidth, windowHeight;
@@ -206,7 +180,7 @@ void display(GLFWwindow *window) {
 
         //drawCube(window);
 
-        drawMySphere();
+        drawMySphere(vertices);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
