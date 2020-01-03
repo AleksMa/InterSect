@@ -4,10 +4,14 @@
 #include "bits/stdc++.h"
 #include "Primary/Point.h"
 #include "Surfaces/Ellipsoid.h"
+#include "Surfaces/Paraboloid.h"
+
+typedef tuple<float, float, float> tuple3f;
+typedef vector<Point> VP;
 
 using namespace std;
 
-GLfloat a = 20.f, b = 0.f, c = 0.f;
+GLfloat a = 0.f, b = 0.f, c = 0.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
 GLboolean fl = false;
 
@@ -31,20 +35,19 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
         if (key == GLFW_KEY_DOWN) {
             a += 3.f;
         }
-        if (key == GLFW_KEY_RIGHT) {
-            b -= 3.f;
-        }
-
-        if (key == GLFW_KEY_LEFT) {
-            b += 3.f;
-        }
 
         if (key == GLFW_KEY_KP_1) {
+            c += 3.f;
+        }
+        if (key == GLFW_KEY_SLASH) {
             c -= 3.f;
         }
 
-        if (key == GLFW_KEY_RIGHT_SHIFT) {
-            c += 3.f;
+        if (key == GLFW_KEY_RIGHT) {
+            b -= 3.f;
+        }
+        if (key == GLFW_KEY_LEFT) {
+            b += 3.f;
         }
 
         //////////////
@@ -55,10 +58,10 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
         if (key == GLFW_KEY_D) {
             x += 3.f;
         }
+
         if (key == GLFW_KEY_S) {
             y -= 3.f;
         }
-
         if (key == GLFW_KEY_W) {
             y += 3.f;
         }
@@ -66,7 +69,6 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
         if (key == GLFW_KEY_Z) {
             z -= 3.f;
         }
-
         if (key == GLFW_KEY_Q) {
             z += 3.f;
         }
@@ -80,19 +82,19 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
 //        0.f, 0.f, 1.f, 0.5f,
 //        0.f, 0.f, 0.f, 1.f };
 
-vector<Point> makeSphere(GLint r, float A, float B, float C) {
-    Ellipsoid ellipsoid(A, B, C, r * r);
+vector<Point> makeSphere(float A, float B, float C) {
+    Ellipsoid ellipsoid(A, B, C);
     return ellipsoid.makeEllipsoidMash();
 }
 
-vector<Point> makeParaboloid(GLint r, float A, float B, float C) {
-    Ellipsoid ellipsoid(A, B, C, r * r);
-    return ellipsoid.makeEllipsoidMash();
+vector<Point> makeParaboloid(float A, float B) {
+    Paraboloid paraboloid(A, B);
+    return paraboloid.makeMash();
 }
 
-void drawMySphere(vector<Point> Vertices) {
+void drawSurface(vector<Point> Vertices, tuple3f color) {
 
-    static float alpha = 0;
+    auto [R, G, B] = color;
 
     glTranslatef(x, y, z);
 
@@ -102,17 +104,13 @@ void drawMySphere(vector<Point> Vertices) {
 
     glTranslatef(-x, -y, -z);
 
-    GLfloat r = 1.f;
-    GLfloat g = 0.f;
-    GLfloat b = 0.f;
-
     int type = (fl ? GL_POLYGON : GL_LINE_STRIP);
 
     //cout << Vertices.size() << endl;
 
     if (Vertices.size() < 4)
         type = GL_POINTS;
-    glColor4f(0.f, 1.f, 0.f, 0.5);
+    glColor3f(R, G, B);
     glPointSize(4);
     glLineWidth(1);
 
@@ -156,7 +154,11 @@ GLFWwindow *initWindow(const int resX, const int resY) {
 
 void display(GLFWwindow *window) {
 
-    vector<Point> vertices = makeSphere(100, 200, 100, 150);
+    vector<Point> vertices_first = makeSphere(100, 150, 100);
+    vector<Point> vertices_second = makeParaboloid(10, 10);
+
+//    glRotatef(-90.f, 1, 0, 0);
+//    glRotatef(90.f, 0, 0, 1);
 
     while (!glfwWindowShouldClose(window)) {
         GLint windowWidth, windowHeight;
@@ -180,7 +182,8 @@ void display(GLFWwindow *window) {
 
         //drawCube(window);
 
-        drawMySphere(vertices);
+        //drawSurface(vertices_first, {0, 1, 0});
+        drawSurface(vertices_second, {1, 0, 0});
 
         glfwSwapBuffers(window);
         glfwPollEvents();

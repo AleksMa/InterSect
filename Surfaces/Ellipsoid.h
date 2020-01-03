@@ -11,11 +11,11 @@ using namespace std;
 
 class Ellipsoid {
 public:
-    float A, B, C, D;
+    float A, B, C;
 
     int N, M;
 
-    Ellipsoid(float a, float b, float c, float d);
+    Ellipsoid(float a, float b, float c);
 
     vector<Point> makeEllipsoidVertices();
     vector<Point> makeEllipsoidMash();
