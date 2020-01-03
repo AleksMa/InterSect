@@ -21,7 +21,6 @@ vector<Point> Ellipsoid::makeEllipsoidVertices() {
                     B * sin((float) i * pi / N / 2) * sin((float) j * pi * 2 / M),
                     C * cos((float) i * pi / N / 2)
             ));
-            //vertices.push_back(Point(radius * cos(j * pi * 2 / M), - radius / M * i, radius * sin(j * pi * 2 / M)));
         }
     }
     vertices.push_back(Point(0.f, 0.f, -C));

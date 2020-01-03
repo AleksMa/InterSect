@@ -11,7 +11,7 @@ typedef vector<Point> VP;
 
 using namespace std;
 
-GLfloat a = 0.f, b = 0.f, c = 0.f;
+GLfloat a = -90.f, b = 0.f, c = -90.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
 GLboolean fl = false;
 
@@ -37,17 +37,17 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
         }
 
         if (key == GLFW_KEY_KP_1) {
-            c += 3.f;
+            b += 3.f;
         }
         if (key == GLFW_KEY_SLASH) {
-            c -= 3.f;
+            b -= 3.f;
         }
 
         if (key == GLFW_KEY_RIGHT) {
-            b -= 3.f;
+            c -= 3.f;
         }
         if (key == GLFW_KEY_LEFT) {
-            b += 3.f;
+            c += 3.f;
         }
 
         //////////////
@@ -95,14 +95,6 @@ vector<Point> makeParaboloid(float A, float B) {
 void drawSurface(vector<Point> Vertices, tuple3f color) {
 
     auto [R, G, B] = color;
-
-    glTranslatef(x, y, z);
-
-    glRotatef(a, 1, 0, 0);
-    glRotatef(b, 0, 1, 0);
-    glRotatef(c, 0, 0, 1);
-
-    glTranslatef(-x, -y, -z);
 
     int type = (fl ? GL_POLYGON : GL_LINE_STRIP);
 
@@ -182,7 +174,15 @@ void display(GLFWwindow *window) {
 
         //drawCube(window);
 
-        //drawSurface(vertices_first, {0, 1, 0});
+        glTranslatef(x, y, z);
+
+        glRotatef(a, 1, 0, 0);
+        glRotatef(b, 0, 1, 0);
+        glRotatef(c, 0, 0, 1);
+
+        glTranslatef(-x, -y, -z);
+
+        drawSurface(vertices_first, {0, 1, 0});
         drawSurface(vertices_second, {1, 0, 0});
 
         glfwSwapBuffers(window);
