@@ -8,12 +8,15 @@
 
 typedef tuple<float, float, float> tuple3f;
 typedef vector<Point> VP;
+typedef vector<float> VF;
 
 using namespace std;
 
 GLfloat a = -90.f, b = 0.f, c = -90.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
-GLboolean fl = false;
+GLboolean transp = false;
+bool hide = false;
+bool typefl = true;
 
 
 //GLint radius = 100;
@@ -24,8 +27,14 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
         if (key == GLFW_KEY_ESCAPE)
             glfwSetWindowShouldClose(window, GL_TRUE);
 
-        if (key == GLFW_KEY_ENTER || key == GLFW_KEY_SPACE)
-            fl = !fl;
+        if (key == GLFW_KEY_ENTER)
+            transp = !transp;
+
+        if (key == GLFW_KEY_SPACE || key == GLFW_KEY_H)
+            hide = !hide;
+
+        if (key == GLFW_KEY_BACKSLASH)
+            typefl = !typefl;
     }
 
     if (action = GLFW_REPEAT) {
@@ -82,7 +91,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
 //        0.f, 0.f, 1.f, 0.5f,
 //        0.f, 0.f, 0.f, 1.f };
 
-vector<Point> makeSphere(float A, float B, float C) {
+vector<Point> makeEllipsoid(float A, float B, float C) {
     Ellipsoid ellipsoid(A, B, C);
     return ellipsoid.makeEllipsoidMash();
 }
@@ -94,24 +103,88 @@ vector<Point> makeParaboloid(float A, float B) {
 
 void drawSurface(vector<Point> Vertices, tuple3f color) {
 
-    auto [R, G, B] = color;
+    auto[R, G, B] = color;
 
-    int type = (fl ? GL_POLYGON : GL_LINE_STRIP);
+    int type = (typefl ? GL_LINE_STRIP : GL_POLYGON);
 
     //cout << Vertices.size() << endl;
 
     if (Vertices.size() < 4)
         type = GL_POINTS;
-    glColor3f(R, G, B);
-    glPointSize(4);
+    glColor4f(R, G, B, 1);
+    if (transp) {
+        glColor4f(R, G, B, 0.3);
+        type = GL_QUADS;
+    }
+    glPointSize(5);
     glLineWidth(1);
 
-    //glEnable(GL_BLEND); //Enable blending.
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
+    glEnable(GL_BLEND); //Enable blending.
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
+    if (!hide) {
+        glBegin(type);
+        for (auto p : Vertices) {
+            glVertex3f(p.x + x, p.y + y, p.z + z);
+        }
+        glEnd();
+    }
+}
 
-    glBegin(type);
-    for (auto p : Vertices) {
-        glVertex3f(p.x + x, p.y + y, p.z + z);
+void drawIntersect() {
+    VF ellipsoid = VF{1. / (100 * 100), 1. / (150 * 150), 1. / (100 * 100)};
+    VF paraboloid = VF{1. / (10 * 10), 1. / (10 * 10), 0.};
+
+//    glColor3f(0, 0, 1);
+//    glBegin(GL_POINTS);
+//    for (int i = int(1 / ellipsoid[2]) + 1; i >= -int(1 / ellipsoid[2]) - 1; i--) {
+//        float r = 1 - float(i*i) / (ellipsoid[2] * ellipsoid[2]);
+//        VF t = VF{ellipsoid[0] / r, ellipsoid[1] / r};
+//        for (int j = int(1 / t[1]) + 1; j >= -int(1 / t[1]) - 1; j--) {
+//            if (1 >= float(j*j) / (t[1] * t[1])){
+//                float ry = 1 - float(j*j) / (t[1] * t[1]);
+//                glVertex3f(sqrt(ry) * t[0], j, i);
+//                cout << sqrt(ry) * t[0] << " " << j << " " << i  << " "<< endl;
+//            }
+//        }
+//    }
+//    glEnd();
+
+    float eps = 1;
+
+    glColor3f(0, 0, 1);
+    glBegin(GL_POINTS);
+    for (int i = sqrt(1 / ellipsoid[2]); i >= 0; i -= 1) {
+        float rx = 1 - float(i * i) * (ellipsoid[2]);
+        VF t = VF{ellipsoid[0] / rx, ellipsoid[1] / rx};
+
+        for (int j = sqrt(1 / t[1]); j >= -sqrt(1 / t[1]); j -= 1) {
+            if (1 >= float(j * j) * (t[1])) {
+                float ry = 1 - float(j * j) * t[1];
+                float y = j, z = i;
+                float first_x = sqrt(ry) / sqrt(t[0]);
+                float second_x = sqrt(float(z) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
+                float second_x_higher = sqrt(float(z + 1) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
+                float second_x_below = sqrt(float(z - 1) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
+                y++;
+                float second_x_right = sqrt(float(z) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
+                y -= 2;
+                float second_x_left = sqrt(float(z) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
+                if (abs(first_x - second_x) < eps || abs(first_x + second_x) < eps ||
+                    abs(first_x - second_x_higher) < eps || abs(first_x + second_x_higher) < eps ||
+                    abs(first_x - second_x_below) < eps || abs(first_x + second_x_below) < eps ||
+                    abs(first_x - second_x_right) < eps || abs(first_x + second_x_right) < eps ||
+                    abs(first_x - second_x_left) < eps || abs(first_x + second_x_left) < eps) {
+                    glVertex3f(first_x, j, i);
+                }
+                if (abs(-first_x - second_x) < eps || abs(-first_x + second_x) < eps ||
+                    abs(-first_x - second_x_higher) < eps || abs(-first_x + second_x_higher) < eps ||
+                    abs(-first_x - second_x_below) < eps || abs(-first_x + second_x_below) < eps ||
+                    abs(-first_x - second_x_right) < eps || abs(-first_x + second_x_right) < eps ||
+                    abs(-first_x - second_x_left) < eps || abs(-first_x + second_x_left) < eps) {
+                    glVertex3f(-first_x, j, i);
+                }
+            }
+        }
     }
     glEnd();
 }
@@ -140,13 +213,17 @@ GLFWwindow *initWindow(const int resX, const int resY) {
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+
+    GLfloat lightpos[] = {0., 0., 1000., 0.};
+    glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+
     return window;
 }
 
 
 void display(GLFWwindow *window) {
 
-    vector<Point> vertices_first = makeSphere(100, 150, 100);
+    vector<Point> vertices_first = makeEllipsoid(100, 150, 100);
     vector<Point> vertices_second = makeParaboloid(10, 10);
 
 //    glRotatef(-90.f, 1, 0, 0);
@@ -184,6 +261,8 @@ void display(GLFWwindow *window) {
 
         drawSurface(vertices_first, {0, 1, 0});
         drawSurface(vertices_second, {1, 0, 0});
+
+        drawIntersect();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -61,9 +61,9 @@ vector<Point> Ellipsoid::makeEllipsoidMash() {
         finalVerticies.push_back(p2);
     }
 
-    for (int j = 0; j < finalVerticies.size(); ++j) {
-        cout << finalVerticies[j].x << " " << finalVerticies[j].y << " " << finalVerticies[j].z << std::endl;
-    }
+//    for (int j = 0; j < finalVerticies.size(); ++j) {
+//        cout << finalVerticies[j].x << " " << finalVerticies[j].y << " " << finalVerticies[j].z << std::endl;
+//    }
 
 
     if (this->B == 0) {
