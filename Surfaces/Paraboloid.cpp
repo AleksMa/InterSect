@@ -30,6 +30,7 @@ vector<Point> Paraboloid::makeMash() {
         Point p = Vertices[0];
         Point p1 = Vertices[i + 1], p2 = Vertices[(i == M - 1 ? 1 : i + 2)];
         finalVerticies.push_back(p);
+        finalVerticies.push_back(p);
         finalVerticies.push_back(p1);
         finalVerticies.push_back(p2);
     }

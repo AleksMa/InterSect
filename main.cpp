@@ -28,13 +28,13 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
             glfwSetWindowShouldClose(window, GL_TRUE);
 
         if (key == GLFW_KEY_ENTER)
-            transp = !transp;
+            typefl = !typefl;
 
         if (key == GLFW_KEY_SPACE || key == GLFW_KEY_H)
             hide = !hide;
 
         if (key == GLFW_KEY_BACKSLASH)
-            typefl = !typefl;
+            transp = !transp;
     }
 
     if (action = GLFW_REPEAT) {
@@ -105,7 +105,8 @@ void drawSurface(vector<Point> Vertices, tuple3f color) {
 
     auto[R, G, B] = color;
 
-    int type = (typefl ? GL_LINE_STRIP : GL_POLYGON);
+    int type = (typefl ? GL_LINE_STRIP : GL_POLYGON
+            );
 
     //cout << Vertices.size() << endl;
 
@@ -133,21 +134,6 @@ void drawSurface(vector<Point> Vertices, tuple3f color) {
 void drawIntersect() {
     VF ellipsoid = VF{1. / (100 * 100), 1. / (150 * 150), 1. / (100 * 100)};
     VF paraboloid = VF{1. / (10 * 10), 1. / (10 * 10), 0.};
-
-//    glColor3f(0, 0, 1);
-//    glBegin(GL_POINTS);
-//    for (int i = int(1 / ellipsoid[2]) + 1; i >= -int(1 / ellipsoid[2]) - 1; i--) {
-//        float r = 1 - float(i*i) / (ellipsoid[2] * ellipsoid[2]);
-//        VF t = VF{ellipsoid[0] / r, ellipsoid[1] / r};
-//        for (int j = int(1 / t[1]) + 1; j >= -int(1 / t[1]) - 1; j--) {
-//            if (1 >= float(j*j) / (t[1] * t[1])){
-//                float ry = 1 - float(j*j) / (t[1] * t[1]);
-//                glVertex3f(sqrt(ry) * t[0], j, i);
-//                cout << sqrt(ry) * t[0] << " " << j << " " << i  << " "<< endl;
-//            }
-//        }
-//    }
-//    glEnd();
 
     float eps = 1;
 
@@ -214,8 +200,8 @@ GLFWwindow *initWindow(const int resX, const int resY) {
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    GLfloat lightpos[] = {0., 0., 1000., 0.};
-    glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+//    GLfloat lightpos[] = {0., 0., 1., 0.};
+//    glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 
     return window;
 }
@@ -271,13 +257,62 @@ void display(GLFWwindow *window) {
     }
 }
 
+string read_file(const string &path) {
+    ifstream source_stream(path);
+    ostringstream string_stream;
+
+    string_stream << source_stream.rdbuf();
+    source_stream.close();
+
+    return string_stream.str();
+}
+
+inline bool space(char c){
+    return std::isspace(c);
+}
+
+inline bool notspace(char c){
+    return !std::isspace(c);
+}
+
+std::vector<std::string> split(const std::string& s){
+    typedef std::string::const_iterator iter;
+    std::vector<std::string> ret;
+    iter i = s.begin();
+    while(i!=s.end()){
+        i = std::find_if(i, s.end(), notspace); // find the beginning of a word
+        iter j= std::find_if(i, s.end(), space); // find the end of the same word
+        if(i!=s.end()){
+            ret.push_back(std::string(i, j)); //insert the word into vector
+            i = j; // repeat 1,2,3 on the rest of the line.
+        }
+    }
+    return ret;
+}
+
 
 int main(int argc, char **argv) {
-    GLFWwindow *window = initWindow(800, 600);
-    if (nullptr != window) {
-        display(window);
+//    GLFWwindow *window = initWindow(800, 600);
+//    if (nullptr != window) {
+//        display(window);
+//    }
+//    glfwDestroyWindow(window);
+//    glfwTerminate();
+
+
+    string input_file = "/home/alexey/CLionProjects/InterSect/config.txt";
+    string source = read_file(input_file);
+    vector<string> params = split(source);
+    vector<string> first_params(params.begin() + 10, params.begin() + 20);
+    vector<string> second_params(params.begin() + 20, params.begin() + 30);
+    for (int i = 0; i < first_params.size(); ++i) {
+        cout << i << " " << first_params[i] << endl;
     }
-    glfwDestroyWindow(window);
-    glfwTerminate();
+
+    for (int i = 0; i < second_params.size(); ++i) {
+        cout << i << " " << second_params[i] << endl;
+    }
+
+
     return 0;
 }

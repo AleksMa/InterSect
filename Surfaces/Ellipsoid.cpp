@@ -34,6 +34,7 @@ vector<Point> Ellipsoid::makeEllipsoidMash() {
         Point p = Vertices[0];
         Point p1 = Vertices[i + 1], p2 = Vertices[(i == M - 1 ? 1 : i + 2)];
         finalVerticies.push_back(p);
+        finalVerticies.push_back(p);
         finalVerticies.push_back(p1);
         finalVerticies.push_back(p2);
     }
@@ -56,6 +57,7 @@ vector<Point> Ellipsoid::makeEllipsoidMash() {
         Point p = Vertices[Vertices.size() - 1];
         Point p1 = Vertices[M * (2 * N - 2) + i + 1];
         Point p2 = Vertices[(i == M - 1 ? M * (2 * N - 2) + 1 : M * (2 * N - 2) + i + 2)];
+        finalVerticies.push_back(p);
         finalVerticies.push_back(p);
         finalVerticies.push_back(p1);
         finalVerticies.push_back(p2);
