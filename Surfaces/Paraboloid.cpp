@@ -5,7 +5,7 @@
 Paraboloid::Paraboloid(float a, float b) : A(a), B(b) {}
 
 vector<Point> Paraboloid::makeVertices() {
-    N = 100 / 10 + 5;
+    N = 130 / 10 + 5;
     M = 20;
     vector<Point> vertices;
     const float pi = 3.14159265358979323846;

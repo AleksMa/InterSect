@@ -14,9 +14,14 @@ using namespace std;
 
 GLfloat a = -90.f, b = 0.f, c = -90.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
-GLboolean transp = false;
+
+bool transp = false;
 bool hide = false;
 bool typefl = true;
+
+vector<float> first_surface;
+vector<float> second_surface;
+
 
 
 //GLint radius = 100;
@@ -101,31 +106,29 @@ vector<Point> makeParaboloid(float A, float B) {
     return paraboloid.makeMash();
 }
 
-void drawSurface(vector<Point> Vertices, tuple3f color) {
+void drawSurface(vector<Point> Vertices, tuple3f color, float move) {
 
     auto[R, G, B] = color;
 
-    int type = (typefl ? GL_LINE_STRIP : GL_POLYGON
-            );
-
-    //cout << Vertices.size() << endl;
+    int type = (typefl ? GL_LINE_STRIP : GL_QUADS
+    );
 
     if (Vertices.size() < 4)
         type = GL_POINTS;
     glColor4f(R, G, B, 1);
+
     if (transp) {
         glColor4f(R, G, B, 0.3);
-        type = GL_QUADS;
+        if (!typefl)
+            type = GL_QUADS;
     }
     glPointSize(5);
     glLineWidth(1);
 
-    glEnable(GL_BLEND); //Enable blending.
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
     if (!hide) {
         glBegin(type);
         for (auto p : Vertices) {
-            glVertex3f(p.x + x, p.y + y, p.z + z);
+            glVertex3f(p.x + x, p.y + y + move, p.z + z + move);
         }
         glEnd();
     }
@@ -139,7 +142,42 @@ void drawIntersect() {
 
     glColor3f(0, 0, 1);
     glBegin(GL_POINTS);
-    for (int i = sqrt(1 / ellipsoid[2]); i >= 0; i -= 1) {
+
+    for (float i = sqrt(1 / ellipsoid[2]) + 1; i >= -1; i -= 0.5) {
+        float rx = 1 - float(i * i) * (ellipsoid[2]);
+        VF t = VF{ellipsoid[0] / rx, ellipsoid[1] / rx};
+
+        for (float j = sqrt(1 / t[1]) + 1; j >= sqrt(1 / t[1]) - 2; j -= 0.1) {
+            if (1 >= float(j * j) * (t[1])) {
+                float ry = 1 - float(j * j) * t[1];
+                float y = j, z = i;
+                float first_x = sqrt(ry) / sqrt(t[0]);
+                float second_x = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_higher = sqrt(float(z + 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_below = sqrt(float(z - 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                y++;
+                float second_x_right = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                y -= 2;
+                float second_x_left = sqrt(float(z) + 50 - paraboloid[1] * float((y +50) * (y + 50))) / sqrt(paraboloid[0]);
+                if (abs(first_x - second_x) < eps || abs(first_x + second_x) < eps ||
+                    abs(first_x - second_x_higher) < eps || abs(first_x + second_x_higher) < eps ||
+                    abs(first_x - second_x_below) < eps || abs(first_x + second_x_below) < eps ||
+                    abs(first_x - second_x_right) < eps || abs(first_x + second_x_right) < eps ||
+                    abs(first_x - second_x_left) < eps || abs(first_x + second_x_left) < eps) {
+                    glVertex3f(first_x, j, i);
+                }
+                if (abs(-first_x - second_x) < eps || abs(-first_x + second_x) < eps ||
+                    abs(-first_x - second_x_higher) < eps || abs(-first_x + second_x_higher) < eps ||
+                    abs(-first_x - second_x_below) < eps || abs(-first_x + second_x_below) < eps ||
+                    abs(-first_x - second_x_right) < eps || abs(-first_x + second_x_right) < eps ||
+                    abs(-first_x - second_x_left) < eps || abs(-first_x + second_x_left) < eps) {
+                    glVertex3f(-first_x, j, i);
+                }
+            }
+        }
+    }
+
+    for (int i = sqrt(1 / ellipsoid[2]) + 1; i >= -1; i -= 1) {
         float rx = 1 - float(i * i) * (ellipsoid[2]);
         VF t = VF{ellipsoid[0] / rx, ellipsoid[1] / rx};
 
@@ -148,13 +186,47 @@ void drawIntersect() {
                 float ry = 1 - float(j * j) * t[1];
                 float y = j, z = i;
                 float first_x = sqrt(ry) / sqrt(t[0]);
-                float second_x = sqrt(float(z) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
-                float second_x_higher = sqrt(float(z + 1) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
-                float second_x_below = sqrt(float(z - 1) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
+                float second_x = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_higher = sqrt(float(z + 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_below = sqrt(float(z - 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 y++;
-                float second_x_right = sqrt(float(z) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
+                float second_x_right = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 y -= 2;
-                float second_x_left = sqrt(float(z) - paraboloid[1] * float(y * y)) / sqrt(paraboloid[0]);
+                float second_x_left = sqrt(float(z) + 50 - paraboloid[1] * float((y +50) * (y + 50))) / sqrt(paraboloid[0]);
+                if (abs(first_x - second_x) < eps || abs(first_x + second_x) < eps ||
+                    abs(first_x - second_x_higher) < eps || abs(first_x + second_x_higher) < eps ||
+                    abs(first_x - second_x_below) < eps || abs(first_x + second_x_below) < eps ||
+                    abs(first_x - second_x_right) < eps || abs(first_x + second_x_right) < eps ||
+                    abs(first_x - second_x_left) < eps || abs(first_x + second_x_left) < eps) {
+                    glVertex3f(first_x, j, i);
+                }
+                if (abs(-first_x - second_x) < eps || abs(-first_x + second_x) < eps ||
+                    abs(-first_x - second_x_higher) < eps || abs(-first_x + second_x_higher) < eps ||
+                    abs(-first_x - second_x_below) < eps || abs(-first_x + second_x_below) < eps ||
+                    abs(-first_x - second_x_right) < eps || abs(-first_x + second_x_right) < eps ||
+                    abs(-first_x - second_x_left) < eps || abs(-first_x + second_x_left) < eps) {
+                    glVertex3f(-first_x, j, i);
+                }
+            }
+        }
+    }
+
+    for (float i = sqrt(1 / ellipsoid[2]) + 1; i >= -1; i -= 0.5) {
+        float rx = 1 - float(i * i) * (ellipsoid[2]);
+        VF t = VF{ellipsoid[0] / rx, ellipsoid[1] / rx};
+
+        for (float j = -sqrt(1 / t[1]) + 2; j >= -sqrt(1 / t[1]) - 1; j -= 0.1) {
+            if (1 >= float(j * j) * (t[1])) {
+                float ry = 1 - float(j * j) * t[1];
+                float y = j, z = i;
+                float first_x = sqrt(ry) / sqrt(t[0]);
+                float second_x = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_higher = sqrt(float(z + 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_below = sqrt(float(z - 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                y++;
+                float second_x_right = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                y -= 2;
+                float second_x_left = sqrt(float(z) + 50 - paraboloid[1] * float((y +50) * (y + 50))) / sqrt(paraboloid[0]);
                 if (abs(first_x - second_x) < eps || abs(first_x + second_x) < eps ||
                     abs(first_x - second_x_higher) < eps || abs(first_x + second_x_higher) < eps ||
                     abs(first_x - second_x_below) < eps || abs(first_x + second_x_below) < eps ||
@@ -200,6 +272,9 @@ GLFWwindow *initWindow(const int resX, const int resY) {
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
+    glEnable(GL_BLEND); //Enable blending.
+
 //    GLfloat lightpos[] = {0., 0., 1., 0.};
 //    glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
 
@@ -207,10 +282,18 @@ GLFWwindow *initWindow(const int resX, const int resY) {
 }
 
 
+//void display(GLFWwindow *window, vector<float> first_params, vector<float> second_params) {
 void display(GLFWwindow *window) {
 
-    vector<Point> vertices_first = makeEllipsoid(100, 150, 100);
-    vector<Point> vertices_second = makeParaboloid(10, 10);
+    vector<Point> vertices_first = makeEllipsoid(sqrt(1 / first_surface[0]),
+                                                 sqrt(1 / first_surface[1]),
+                                                 sqrt(1 / first_surface[2]));
+
+    vector<Point> vertices_second = makeParaboloid(sqrt(1 / second_surface[0]),
+                                                   sqrt(1 / second_surface[1]));
+
+//    vector<Point> vertices_first = makeEllipsoid(100, 150, 100);
+//    vector<Point> vertices_second = makeParaboloid(10, 10);
 
 //    glRotatef(-90.f, 1, 0, 0);
 //    glRotatef(90.f, 0, 0, 1);
@@ -245,10 +328,11 @@ void display(GLFWwindow *window) {
 
         glTranslatef(-x, -y, -z);
 
-        drawSurface(vertices_first, {0, 1, 0});
-        drawSurface(vertices_second, {1, 0, 0});
-
         drawIntersect();
+
+        drawSurface(vertices_first, {0, 1, 0}, 0);
+
+        drawSurface(vertices_second, {1, 0, 0}, -50);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -267,24 +351,24 @@ string read_file(const string &path) {
     return string_stream.str();
 }
 
-inline bool space(char c){
-    return std::isspace(c);
+inline bool space(char c) {
+    return isspace(c);
 }
 
-inline bool notspace(char c){
-    return !std::isspace(c);
+inline bool notspace(char c) {
+    return !isspace(c);
 }
 
-std::vector<std::string> split(const std::string& s){
-    typedef std::string::const_iterator iter;
-    std::vector<std::string> ret;
+vector<string> split(const string &s) {
+    typedef string::const_iterator iter;
+    vector<string> ret;
     iter i = s.begin();
-    while(i!=s.end()){
-        i = std::find_if(i, s.end(), notspace); // find the beginning of a word
-        iter j= std::find_if(i, s.end(), space); // find the end of the same word
-        if(i!=s.end()){
-            ret.push_back(std::string(i, j)); //insert the word into vector
-            i = j; // repeat 1,2,3 on the rest of the line.
+    while (i != s.end()) {
+        i = find_if(i, s.end(), notspace);
+        iter j = find_if(i, s.end(), space);
+        if (i != s.end()) {
+            ret.push_back(string(i, j));
+            i = j;
         }
     }
     return ret;
@@ -292,14 +376,6 @@ std::vector<std::string> split(const std::string& s){
 
 
 int main(int argc, char **argv) {
-//    GLFWwindow *window = initWindow(800, 600);
-//    if (nullptr != window) {
-//        display(window);
-//    }
-//    glfwDestroyWindow(window);
-//    glfwTerminate();
-
-
     string input_file = "/home/alexey/CLionProjects/InterSect/config.txt";
     string source = read_file(input_file);
     vector<string> params = split(source);
@@ -307,12 +383,22 @@ int main(int argc, char **argv) {
     vector<string> second_params(params.begin() + 20, params.begin() + 30);
     for (int i = 0; i < first_params.size(); ++i) {
         cout << i << " " << first_params[i] << endl;
+        first_surface.push_back(stof(first_params[i]));
+        cout << i << " " << first_surface[i] << endl;
     }
-
     for (int i = 0; i < second_params.size(); ++i) {
         cout << i << " " << second_params[i] << endl;
+        second_surface.push_back(stof(second_params[i]));
+        cout << i << " " << second_surface[i] << endl;
     }
 
+
+    GLFWwindow *window = initWindow(800, 600);
+    if (nullptr != window) {
+        display(window);
+    }
+    glfwDestroyWindow(window);
+    glfwTerminate();
 
     return 0;
 }
