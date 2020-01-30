@@ -5,6 +5,7 @@
 #include "Primary/Point.h"
 #include "Surfaces/Ellipsoid.h"
 #include "Surfaces/Paraboloid.h"
+#include "Evaluations/Equation.h"
 
 typedef tuple<float, float, float> tuple3f;
 typedef vector<Point> VP;
@@ -376,29 +377,36 @@ vector<string> split(const string &s) {
 
 
 int main(int argc, char **argv) {
-    string input_file = "/home/alexey/CLionProjects/InterSect/config.txt";
-    string source = read_file(input_file);
-    vector<string> params = split(source);
-    vector<string> first_params(params.begin() + 10, params.begin() + 20);
-    vector<string> second_params(params.begin() + 20, params.begin() + 30);
-    for (int i = 0; i < first_params.size(); ++i) {
-        cout << i << " " << first_params[i] << endl;
-        first_surface.push_back(stof(first_params[i]));
-        cout << i << " " << first_surface[i] << endl;
-    }
-    for (int i = 0; i < second_params.size(); ++i) {
-        cout << i << " " << second_params[i] << endl;
-        second_surface.push_back(stof(second_params[i]));
-        cout << i << " " << second_surface[i] << endl;
-    }
+//    string input_file = "/home/alexey/CLionProjects/InterSect/config.txt";
+//    string source = read_file(input_file);
+//    vector<string> params = split(source);
+//    if(params.size() < 30)
+//        exit(1);
+//    vector<string> first_params(params.begin() + 10, params.begin() + 20);
+//    vector<string> second_params(params.begin() + 20, params.begin() + 30);
+//    for (int i = 0; i < first_params.size(); ++i) {
+//        cout << i << " " << first_params[i] << endl;
+//        first_surface.push_back(stof(first_params[i]));
+//        cout << i << " " << first_surface[i] << endl;
+//    }
+//    for (int i = 0; i < second_params.size(); ++i) {
+//        cout << i << " " << second_params[i] << endl;
+//        second_surface.push_back(stof(second_params[i]));
+//        cout << i << " " << second_surface[i] << endl;
+//    }
+
+    Equation eq(vector<float>{-1, -1, 1, 1});
+    auto v = eq.solve();
+    for (auto xx : v)
+        cout << xx << endl;
 
 
-    GLFWwindow *window = initWindow(800, 600);
-    if (nullptr != window) {
-        display(window);
-    }
-    glfwDestroyWindow(window);
-    glfwTerminate();
+//    GLFWwindow *window = initWindow(800, 600);
+//    if (nullptr != window) {
+//        display(window);
+//    }
+//    glfwDestroyWindow(window);
+//    glfwTerminate();
 
     return 0;
 }
