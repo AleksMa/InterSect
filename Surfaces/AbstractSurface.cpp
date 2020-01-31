@@ -16,7 +16,7 @@ void AbstractSurface::getCanonical() {
     if (is_zero(equation.XY()) &&
         is_zero(equation.XZ()) &&
         is_zero(equation.YZ())) {
-        // МАТРИЦА ДИАГОНАЛЬНА => К ШАГУ 4
+        // TODO: МАТРИЦА ДИАГОНАЛЬНА => К ШАГУ 4
     }
     // 2
     auto eigenvalues = getEigenvalues();
@@ -28,7 +28,7 @@ void AbstractSurface::getCanonical() {
     // 3
     if (equal(eigenvalues[0], eigenvalues[1]) && equal(eigenvalues[1], eigenvalues[2])) {
         // a
-        // МАТРИЦА ДИАГОНАЛЬНА => К ШАГУ 4
+        // TODO: МАТРИЦА ДИАГОНАЛЬНА => К ШАГУ 4
     } else if (equal(eigenvalues[0], eigenvalues[1]) || equal(eigenvalues[1], eigenvalues[2]) || equal(eigenvalues[0], eigenvalues[2])) {
         if (equal(eigenvalues[1], eigenvalues[2]))
             swap(eigenvalues[0], eigenvalues[2]);

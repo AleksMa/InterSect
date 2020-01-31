@@ -6,6 +6,7 @@
 #include "Surfaces/Ellipsoid.h"
 #include "Surfaces/Paraboloid.h"
 #include "Evaluations/Equation.h"
+#include "Evaluations/EquationSystem.h"
 
 typedef tuple<float, float, float> tuple3f;
 typedef vector<Point> VP;
@@ -154,12 +155,16 @@ void drawIntersect() {
                 float y = j, z = i;
                 float first_x = sqrt(ry) / sqrt(t[0]);
                 float second_x = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
-                float second_x_higher = sqrt(float(z + 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
-                float second_x_below = sqrt(float(z - 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_higher =
+                        sqrt(float(z + 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_below =
+                        sqrt(float(z - 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 y++;
-                float second_x_right = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_right =
+                        sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 y -= 2;
-                float second_x_left = sqrt(float(z) + 50 - paraboloid[1] * float((y +50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_left =
+                        sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 if (abs(first_x - second_x) < eps || abs(first_x + second_x) < eps ||
                     abs(first_x - second_x_higher) < eps || abs(first_x + second_x_higher) < eps ||
                     abs(first_x - second_x_below) < eps || abs(first_x + second_x_below) < eps ||
@@ -188,12 +193,16 @@ void drawIntersect() {
                 float y = j, z = i;
                 float first_x = sqrt(ry) / sqrt(t[0]);
                 float second_x = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
-                float second_x_higher = sqrt(float(z + 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
-                float second_x_below = sqrt(float(z - 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_higher =
+                        sqrt(float(z + 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_below =
+                        sqrt(float(z - 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 y++;
-                float second_x_right = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_right =
+                        sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 y -= 2;
-                float second_x_left = sqrt(float(z) + 50 - paraboloid[1] * float((y +50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_left =
+                        sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 if (abs(first_x - second_x) < eps || abs(first_x + second_x) < eps ||
                     abs(first_x - second_x_higher) < eps || abs(first_x + second_x_higher) < eps ||
                     abs(first_x - second_x_below) < eps || abs(first_x + second_x_below) < eps ||
@@ -222,12 +231,16 @@ void drawIntersect() {
                 float y = j, z = i;
                 float first_x = sqrt(ry) / sqrt(t[0]);
                 float second_x = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
-                float second_x_higher = sqrt(float(z + 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
-                float second_x_below = sqrt(float(z - 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_higher =
+                        sqrt(float(z + 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_below =
+                        sqrt(float(z - 1) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 y++;
-                float second_x_right = sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_right =
+                        sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 y -= 2;
-                float second_x_left = sqrt(float(z) + 50 - paraboloid[1] * float((y +50) * (y + 50))) / sqrt(paraboloid[0]);
+                float second_x_left =
+                        sqrt(float(z) + 50 - paraboloid[1] * float((y + 50) * (y + 50))) / sqrt(paraboloid[0]);
                 if (abs(first_x - second_x) < eps || abs(first_x + second_x) < eps ||
                     abs(first_x - second_x_higher) < eps || abs(first_x + second_x_higher) < eps ||
                     abs(first_x - second_x_below) < eps || abs(first_x + second_x_below) < eps ||
@@ -395,10 +408,16 @@ int main(int argc, char **argv) {
 //        cout << i << " " << second_surface[i] << endl;
 //    }
 
-    Equation eq(vector<float>{-1, -1, 1, 1});
+    EquationSystem eq({
+                              {1, 2, 3,  4},
+                              {5, 7, 10, 5},
+                              {3, 2, 2,  1}
+                      });
     auto v = eq.solve();
-    for (auto xx : v)
-        cout << xx << endl;
+
+    for (auto el : v) {
+        cout << el << endl;
+    }
 
 
 //    GLFWwindow *window = initWindow(800, 600);
