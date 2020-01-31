@@ -417,10 +417,6 @@ int main(int argc, char **argv) {
                               { 1, 1, 1, 0 }
                       });
 
-//    {2, 2, -1,  0},
-//    {5, 4, -6, 0},
-//    {3, 2, -5,  0}
-
     auto v = eq.solve();
 
     for (auto el : v) {

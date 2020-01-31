@@ -12,6 +12,7 @@ typedef vector<float> VF;
 class AbstractSurface {
 private:
     SurfaceEquation equation;
+    SurfaceEquation temporary;
     SurfaceEquation canonical;
 
     vector<float> getEigenvalues();
