@@ -14,6 +14,7 @@ AbstractSurface::AbstractSurface() : equation(VF(10)), canonical(VF(10)), tempor
 void AbstractSurface::getCanonical() {
     // mathhelpplanet.com/static.php?p=privedenie-uravneniya-poverhnosti-k-kanonicheskomu-vidu
     vector<VF> ST;
+    VF eigenvalues;
     // 1
     if (is_zero(equation.XY()) &&
         is_zero(equation.XZ()) &&
@@ -21,10 +22,15 @@ void AbstractSurface::getCanonical() {
         ST = {{1, 0, 0},
               {0, 1, 0},
               {0, 0, 1}};
+        eigenvalues = {
+                equation.XX(),
+                equation.YY(),
+                equation.ZZ()
+        };
     } else {
 
         // 2
-        auto eigenvalues = getEigenvalues();
+        eigenvalues = getEigenvalues();
 
         if (eigenvalues.size() < 3) {
             return;
@@ -91,7 +97,7 @@ void AbstractSurface::getCanonical() {
             for (float l : l1) {
                 d += l * l;
             }
-            for (float & l : l1) {
+            for (float &l : l1) {
                 l /= sqrt(d);
             }
 
@@ -99,7 +105,7 @@ void AbstractSurface::getCanonical() {
             for (float l : l2) {
                 d += l * l;
             }
-            for (float & l : l2) {
+            for (float &l : l2) {
                 l /= sqrt(d);
             }
 
@@ -107,7 +113,7 @@ void AbstractSurface::getCanonical() {
             for (float l : l3) {
                 d += l * l;
             }
-            for (float & l : l3) {
+            for (float &l : l3) {
                 l /= sqrt(d);
             }
 
@@ -153,7 +159,72 @@ void AbstractSurface::getCanonical() {
     }
 
     // 4
-    temporary.X() = ST[0][0] * equation.X() + ST[0][1].
+    temporary.X() = ST[0][0] * equation.X() + ST[0][1] * equation.Y() + ST[0][2] * equation.Z();
+    temporary.Y() = ST[1][0] * equation.X() + ST[1][1] * equation.Y() + ST[1][2] * equation.Z();
+    temporary.Z() = ST[2][0] * equation.X() + ST[2][1] * equation.Y() + ST[2][2] * equation.Z();
+
+    temporary.X() *= 2;
+    temporary.Y() *= 2;
+    temporary.Z() *= 2;
+
+    temporary.XX() = eigenvalues[0];
+    temporary.YY() = eigenvalues[1];
+    temporary.ZZ() = eigenvalues[2];
+
+    temporary.D() = equation.D();
+
+
+    if (is_zero(temporary.X()) && is_zero(temporary.Y()) && is_zero(temporary.Z())) {
+        // a TODO: => 5
+    } else {
+        if (!is_zero(temporary.X()) && !is_zero(temporary.XX())) {
+            // x^2 => (x + X/2XX)^2
+            // D => D - X*X/4XX
+            temporary.D() -= temporary.X() * temporary.X() / (4 * temporary.XX());
+            temporary.X() = 0;
+        }
+        if (!is_zero(temporary.Y()) && !is_zero(temporary.YY())) {
+            // y^2 => (y + Y/2YY)^2
+            // D => D - Y*Y/4YY
+            temporary.D() -= temporary.Y() * temporary.Y() / (4 * temporary.YY());
+            temporary.Y() = 0;
+        }
+        if (!is_zero(temporary.Z()) && !is_zero(temporary.ZZ())) {
+            // z^2 => (z + Z/2ZZ)^2
+            // D => D - Z*Z/4ZZ
+            temporary.D() -= temporary.Z() * temporary.Z() / (4 * temporary.ZZ());
+            temporary.Z() = 0;
+        }
+
+        if (!is_zero(temporary.Y()) && !is_zero(temporary.Z()) &&
+            is_zero(temporary.YY()) && is_zero(temporary.ZZ())) {
+            // y => (Y / 2 * y + Z / 2 * z + D / 2) * 2 sqrt(Y * Y / 4 + Z * Z / 4)
+            // z => (- Z / 2 * y + Y / 2 * z) * 2 sqrt(Y * Y / 4 + Z * Z / 4)
+            temporary.Y() = 2 * sqrt(temporary.Y() * temporary.Y() / 4 + temporary.Z() * temporary.Z() / 4);
+            temporary.Z() = 0;
+        }
+        // TODO: X & Y, X & Z
+
+        if (!is_zero(temporary.X()) && !is_zero(temporary.D())) {
+            // x => (x + D)
+            // D => 0
+            temporary.D() = 0;
+        }
+
+        if (!is_zero(temporary.Y()) && !is_zero(temporary.D())) {
+            // y => (y + D)
+            // D => 0
+            temporary.D() = 0;
+        }
+
+        if (!is_zero(temporary.Z()) && !is_zero(temporary.D())) {
+            // z => (z + D)
+            // D => 0
+            temporary.D() = 0;
+        }
+
+    }
+
 
 }
 

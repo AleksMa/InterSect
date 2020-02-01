@@ -5,6 +5,7 @@
 #include "SurfaceEquation.h"
 
 #include <utility>
+#include <iostream>
 
 SurfaceEquation::SurfaceEquation(VF coef): equation(std::move(coef)) {
     while (equation.size() < size)
@@ -51,4 +52,11 @@ float &SurfaceEquation::Z() {
 
 float &SurfaceEquation::D() {
     return equation[9];
+}
+
+void SurfaceEquation::print() {
+    for (auto el : equation) {
+        cout << el << " ";
+    }
+    cout << endl;
 }

@@ -27,6 +27,7 @@ struct SurfaceEquation {
     float &Y();
     float &Z();
     float &D();
+    void print();
 };
 
 
