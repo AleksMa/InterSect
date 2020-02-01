@@ -20,6 +20,8 @@ VF EquationSystem::solve() {
 
     VF ret;
 
+    print();
+
     lower_course();
     print();
 
@@ -71,6 +73,12 @@ VF EquationSystem::solve() {
             ret.push_back(equation_system[m][N - 1]);
         }
     }
+
+    cout << "SOLVED: " << endl;
+    for (auto solved_value : ret) {
+        cout << solved_value << " ";
+    }
+    cout << endl << endl;
 
     return ret;
 }

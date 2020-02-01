@@ -2,6 +2,7 @@
 // Created by alexey on 30.01.2020.
 //
 
+#include <iostream>
 #include "AbstractSurface.h"
 #include "../Evaluations/Equation.h"
 #include "../Evaluations/Calculations.cpp"
@@ -35,6 +36,11 @@ void AbstractSurface::getCanonical() {
         if (eigenvalues.size() < 3) {
             return;
         }
+
+        for (auto value : eigenvalues) {
+            cout << value << " ";
+        }
+        cout << endl;
 
         // 3
         if (equal(eigenvalues[0], eigenvalues[1]) && equal(eigenvalues[1], eigenvalues[2])) {
@@ -126,22 +132,21 @@ void AbstractSurface::getCanonical() {
                 EquationSystem es({
                                           {
                                                   equation.XX() - eigenvalue,
-                                                  equation.XY(),
-                                                  equation.XZ(),
+                                                  equation.XY() / 2,
+                                                  equation.XZ() / 2,
                                                   0
                                           },
 
                                           {
-                                                  equation.XY(),
+                                                  equation.XY() / 2,
                                                   equation.YY() - eigenvalue,
-                                                  equation.YZ(),
+                                                  equation.YZ() / 2,
                                                   0
                                           },
                                           {
-                                                  equation.XZ(),
-                                                  equation.YZ(),
-                                                  equation.ZZ() -
-                                                  eigenvalue,
+                                                  equation.XZ() / 2,
+                                                  equation.YZ() / 2,
+                                                  equation.ZZ() - eigenvalue,
                                                   0
                                           },
                                   });
@@ -163,15 +168,17 @@ void AbstractSurface::getCanonical() {
     temporary.Y() = ST[1][0] * equation.X() + ST[1][1] * equation.Y() + ST[1][2] * equation.Z();
     temporary.Z() = ST[2][0] * equation.X() + ST[2][1] * equation.Y() + ST[2][2] * equation.Z();
 
-    temporary.X() *= 2;
-    temporary.Y() *= 2;
-    temporary.Z() *= 2;
+//    temporary.X() *= 2;
+//    temporary.Y() *= 2;
+//    temporary.Z() *= 2;
 
     temporary.XX() = eigenvalues[0];
     temporary.YY() = eigenvalues[1];
     temporary.ZZ() = eigenvalues[2];
 
     temporary.D() = equation.D();
+
+    temporary.print();
 
 
     if (is_zero(temporary.X()) && is_zero(temporary.Y()) && is_zero(temporary.Z())) {
@@ -225,17 +232,19 @@ void AbstractSurface::getCanonical() {
 
     }
 
+    temporary.print();
+
 
 }
 
 vector<float> AbstractSurface::getEigenvalues() {
-    Equation eigenequation(VF{
+    VF eq_coef = {
 
             equation.XX() * equation.YY() * equation.ZZ()
             + equation.XY() * equation.XZ() * equation.YZ() / 4.f
             - equation.XY() * equation.XY() * equation.ZZ() / 4.f
             - equation.YZ() * equation.YZ() * equation.XX() / 4.f
-            - equation.XY() * equation.XY() * equation.ZZ() / 4.f,
+            - equation.XZ() * equation.XZ() * equation.YY() / 4.f,
 
             -equation.YY() * equation.ZZ()
             - equation.XX() * equation.YY()
@@ -249,6 +258,13 @@ vector<float> AbstractSurface::getEigenvalues() {
             + equation.ZZ(),
 
             -1
-    });
+    };
+
+    for (auto coef : eq_coef) {
+        cout << coef << " ";
+    }
+    cout << endl;
+
+    Equation eigenequation(eq_coef);
     return eigenequation.solve();
 }

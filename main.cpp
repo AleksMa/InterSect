@@ -7,6 +7,7 @@
 #include "Surfaces/Paraboloid.h"
 #include "Evaluations/Equation.h"
 #include "Evaluations/EquationSystem.h"
+#include "Surfaces/AbstractSurface.h"
 
 typedef tuple<float, float, float> tuple3f;
 typedef vector<Point> VP;
@@ -408,20 +409,32 @@ int main(int argc, char **argv) {
 //        cout << i << " " << second_surface[i] << endl;
 //    }
 
-    EquationSystem eq({
-//                              {2, 2, -1, 0},
-//                              {5, 4, -6, 0},
-//                              {3, 2, -5, 0},
-                              { 1, 1, 1, 0 },
-                              { 1, 1, 1, 0 },
-                              { 1, 1, 1, 0 }
-                      });
+//    EquationSystem eq({
+////                              {2, 2, -1, 0},
+////                              {5, 4, -6, 0},
+////                              {3, 2, -5, 0},
+//                              { 1, 1, 1, 0 },
+//                              { 1, 1, 1, 0 },
+//                              { 1, 1, 1, 0 }
+//                      });
+//
+//    auto v = eq.solve();
+//
+//    for (auto el : v) {
+//        cout << el << endl;
+//    }
 
-    auto v = eq.solve();
+//    AbstractSurface as(VF{1, 1, 0, 0, 0, 0, 2, -4, 2, 1});
+// quite OK
 
-    for (auto el : v) {
-        cout << el << endl;
-    }
+//    AbstractSurface as(VF{1, 0, 0, 0, 0, 0, 0, 6, -8, 10});
+// quite OK
+
+    AbstractSurface as(VF{3, -7, 3, 8, -8, -8, 10, -14, -6, -8});
+
+    as.getCanonical();
+
+
 
 
 //    GLFWwindow *window = initWindow(800, 600);
