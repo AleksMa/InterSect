@@ -351,7 +351,7 @@ void display(GLFWwindow *window) {
 
         glPushMatrix();
         float mulm[] = {1, 0, 0, 0,
-                        0, 5, 0, 0,
+                        0, 1, 0, 0,
                         0, 0, 1, 0,
                         0, 0, 0, 1};
         glMultMatrixf(mulm);
@@ -365,11 +365,11 @@ void display(GLFWwindow *window) {
 
         float mulm2[] = {1, 0, 0, 0,
                          0, 1, 0, 0,
-                         0, 0, -2, 0,
-                         0, 0, 0, 1};
+                         0, 0, 1, 0,
+                         0, -50, -50, 1};
         glMultMatrixf(mulm2);
 
-        drawSurface(vertices_second, {1, 0, 0}, -50);
+        drawSurface(vertices_second, {1, 0, 0}, 0);
 
         glPopMatrix();
 
@@ -415,23 +415,31 @@ vector<string> split(const string &s) {
 
 
 int main(int argc, char **argv) {
-//    string input_file = "/home/alexey/CLionProjects/InterSect/config.txt";
-//    string source = read_file(input_file);
-//    vector<string> params = split(source);
-//    if (params.size() < 30)
-//        exit(1);
-//    vector<string> first_params(params.begin() + 10, params.begin() + 20);
-//    vector<string> second_params(params.begin() + 20, params.begin() + 30);
-//    for (int i = 0; i < first_params.size(); ++i) {
-//        cout << i << " " << first_params[i] << endl;
-//        first_surface.push_back(stof(first_params[i]));
-//        cout << i << " " << first_surface[i] << endl;
-//    }
-//    for (int i = 0; i < second_params.size(); ++i) {
-//        cout << i << " " << second_params[i] << endl;
-//        second_surface.push_back(stof(second_params[i]));
-//        cout << i << " " << second_surface[i] << endl;
-//    }
+    string input_file = "/home/alexey/CLionProjects/InterSect/config.txt";
+    string source = read_file(input_file);
+    vector<string> params = split(source);
+    if (params.size() < 30)
+        exit(1);
+    vector<string> first_params(params.begin() + 10, params.begin() + 20);
+    vector<string> second_params(params.begin() + 20, params.begin() + 30);
+    for (int i = 0; i < first_params.size(); ++i) {
+        cout << i << " " << first_params[i] << endl;
+        first_surface.push_back(stof(first_params[i]));
+        cout << i << " " << first_surface[i] << endl;
+    }
+    for (int i = 0; i < second_params.size(); ++i) {
+        cout << i << " " << second_params[i] << endl;
+        second_surface.push_back(stof(second_params[i]));
+        cout << i << " " << second_surface[i] << endl;
+    }
+
+    GLFWwindow *window = initWindow(800, 600);
+    if (nullptr != window) {
+        display(window);
+    }
+    glfwDestroyWindow(window);
+    glfwTerminate();
+
 
 //    EquationSystem eq({
 ////                              {2, 2, -1, 0},
@@ -448,25 +456,16 @@ int main(int argc, char **argv) {
 //        cout << el << endl;
 //    }
 
-    AbstractSurface as(VF{1, 1, 0, 0, 0, 0, 2, -4, 2, 1});
-// quite OK
 
-//    AbstractSurface as(VF{1, 0, 0, 0, 0, 0, 0, 6, -8, 10});
-// quite OK
-
-//    AbstractSurface as(VF{3, -7, 3, 8, -8, -8, 10, -14, -6, -8});
-
-    as.getCanonical();
-
-
-
-
-//    GLFWwindow *window = initWindow(800, 600);
-//    if (nullptr != window) {
-//        display(window);
-//    }
-//    glfwDestroyWindow(window);
-//    glfwTerminate();
+//    AbstractSurface as(VF{1, 1, 0, 0, 0, 0, 2, -4, 2, 1});
+//// quite OK
+//
+////    AbstractSurface as(VF{1, 0, 0, 0, 0, 0, 0, 6, -8, 10});
+//// quite OK
+//
+////    AbstractSurface as(VF{3, -7, 3, 8, -8, -8, 10, -14, -6, -8});
+//
+//    as.getCanonical();
 
     return 0;
 }

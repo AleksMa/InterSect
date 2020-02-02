@@ -181,6 +181,11 @@ void AbstractSurface::getCanonical() {
     temporary.print();
 
     VF added(3, 0);
+    vector<VF> mul_finally = {
+            {1, 0, 0},
+            {0, 1, 0},
+            {0, 0, 1}
+    };
 
     if (is_zero(temporary.X()) && is_zero(temporary.Y()) && is_zero(temporary.Z())) {
         // a TODO: => 5
@@ -189,21 +194,21 @@ void AbstractSurface::getCanonical() {
             // x^2 => (x + X/2XX)^2
             // D => D - X*X/4XX
             temporary.D() -= temporary.X() * temporary.X() / (4 * temporary.XX());
-            added[0] = - temporary.X() / temporary.XX() / 2;
+            added[0] = -temporary.X() / temporary.XX() / 2;
             temporary.X() = 0;
         }
         if (!is_zero(temporary.Y()) && !is_zero(temporary.YY())) {
             // y^2 => (y + Y/2YY)^2
             // D => D - Y*Y/4YY
             temporary.D() -= temporary.Y() * temporary.Y() / (4 * temporary.YY());
-            added[1] = - temporary.Y() / temporary.YY() / 2;
+            added[1] = -temporary.Y() / temporary.YY() / 2;
             temporary.Y() = 0;
         }
         if (!is_zero(temporary.Z()) && !is_zero(temporary.ZZ())) {
             // z^2 => (z + Z/2ZZ)^2
             // D => D - Z*Z/4ZZ
             temporary.D() -= temporary.Z() * temporary.Z() / (4 * temporary.ZZ());
-            added[2] = - (temporary.Z() / (temporary.ZZ() * 2));
+            added[2] = -(temporary.Z() / (temporary.ZZ() * 2));
             temporary.Z() = 0;
         }
 
@@ -239,11 +244,41 @@ void AbstractSurface::getCanonical() {
 
     }
 
+
     temporary.print();
     cout << endl;
 
     for (auto el : added) {
         cout << el << " ";
+    }
+    cout << endl;
+
+    additional_vector = VF(3, 0);
+
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            additional_vector[i] += added[j] * ST[j][i];
+        }
+    }
+
+    for (int i = 0; i < 3; ++i) {
+        cout << additional_vector[i] << " ";
+    }
+    cout << endl << endl;
+
+    for (int i = 0; i < 3; ++i) {
+        mul_matrix.emplace_back(3, 0);
+    }
+
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            mul_matrix[i][j] =
+                    +ST[0][i] * mul_finally[0][j]
+                    + ST[1][i] * mul_finally[1][j]
+                    + ST[2][i] * mul_finally[2][j];
+            cout << mul_matrix[i][j] << " ";
+        }
+        cout << endl;
     }
     cout << endl;
 

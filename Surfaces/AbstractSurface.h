@@ -15,6 +15,9 @@ private:
     SurfaceEquation temporary;
     SurfaceEquation canonical;
 
+    VF additional_vector;
+    vector<VF> mul_matrix;
+
     vector<float> getEigenvalues();
 
 public:
