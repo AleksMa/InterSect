@@ -7,7 +7,7 @@
 #include "Surfaces/Paraboloid.h"
 #include "Evaluations/Equation.h"
 #include "Evaluations/EquationSystem.h"
-#include "Surfaces/AbstractSurface.h"
+#include "Surfaces/SurfaceEquation.h"
 
 typedef tuple<float, float, float> tuple3f;
 typedef vector<Point> VP;
@@ -444,13 +444,13 @@ int main(int argc, char **argv) {
 
 
 
-//    AbstractSurface as(VF{1, 1, 0, 0, 0, 0, 2, -4, 2, 1});
+//    SurfaceEquation as(VF{1, 1, 0, 0, 0, 0, 2, -4, 2, 1});
 // quite OK
 
-//    AbstractSurface as(VF{1, 0, 0, 0, 0, 0, 0, 6, -8, 10});
+//    SurfaceEquation as(VF{1, 0, 0, 0, 0, 0, 0, 6, -8, 10});
 // quite OK
 
-    AbstractSurface as(VF{3, -7, 3, 8, -8, -8, 10, -14, -6, -8});
+    SurfaceEquation as(VF{3, -7, 3, 8, -8, -8, 10, -14, -6, -8});
 
     as.canonizate();
 
