@@ -16,7 +16,19 @@ struct SurfaceEquation {
     const int size = 10;
     vector<float> equation;
     explicit SurfaceEquation(VF coef);
-    explicit SurfaceEquation();
+    SurfaceEquation();
+
+    SurfaceEquation(const SurfaceEquation &other) {
+        this->equation = other.equation;
+    }
+
+    SurfaceEquation &operator= (const SurfaceEquation &other) {
+        if (this == &other) {
+            this->equation = other.equation;
+        }
+        return *this;
+    }
+
     float &XX();
     float &YY();
     float &ZZ();

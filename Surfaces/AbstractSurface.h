@@ -9,11 +9,19 @@
 #include "SurfaceEquation.h"
 typedef vector<float> VF;
 
+enum surface_type {
+    UNKNOWN,
+    ELLIPSOID,
+    PARABOLOID_ELLIPTIC,
+};
+
 class AbstractSurface {
 private:
+    surface_type type;
+
     SurfaceEquation equation;
     SurfaceEquation temporary;
-    SurfaceEquation canonical;
+    SurfaceEquation canonical_equation;
 
     VF additional_vector;
     vector<VF> mul_matrix;
@@ -24,7 +32,14 @@ public:
     explicit AbstractSurface(VF coef);
     AbstractSurface();
 
-    void getCanonical();
+    SurfaceEquation canonizate();
+
+    SurfaceEquation get_canonical;
+
+    vector<VF> get_mul_matrix();
+    VF get_additional_vector();
+
+    surface_type get_type();
 };
 
 

@@ -8,11 +8,17 @@
 #include "../Evaluations/Calculations.cpp"
 #include "../Evaluations/EquationSystem.h"
 
-AbstractSurface::AbstractSurface(VF coef) : equation(coef), canonical(VF(10)), temporary(VF(10)) {}
+AbstractSurface::AbstractSurface(VF coef) : equation(coef),
+                                            canonical_equation(VF(10)),
+                                            temporary(VF(10)),
+                                            type(UNKNOWN) {}
 
-AbstractSurface::AbstractSurface() : equation(VF(10)), canonical(VF(10)), temporary(VF(10)) {}
+AbstractSurface::AbstractSurface() : equation(VF(10)),
+                                     canonical_equation(VF(10)),
+                                     temporary(VF(10)),
+                                     type(UNKNOWN) {}
 
-void AbstractSurface::getCanonical() {
+SurfaceEquation AbstractSurface::canonizate() {
     // mathhelpplanet.com/static.php?p=privedenie-uravneniya-poverhnosti-k-kanonicheskomu-vidu
     vector<VF> ST;
     VF eigenvalues;
@@ -34,7 +40,7 @@ void AbstractSurface::getCanonical() {
         eigenvalues = getEigenvalues();
 
         if (eigenvalues.size() < 3) {
-            return;
+            return SurfaceEquation();
         }
 
         for (auto value : eigenvalues) {
@@ -282,7 +288,9 @@ void AbstractSurface::getCanonical() {
     }
     cout << endl;
 
+    canonical_equation = temporary;
 
+    return canonical_equation;
 }
 
 vector<float> AbstractSurface::getEigenvalues() {
@@ -315,4 +323,16 @@ vector<float> AbstractSurface::getEigenvalues() {
 
     Equation eigenequation(eq_coef);
     return eigenequation.solve();
+}
+
+vector<VF> AbstractSurface::get_mul_matrix() {
+    return mul_matrix;
+}
+
+VF AbstractSurface::get_additional_vector() {
+    return additional_vector;
+}
+
+surface_type AbstractSurface::get_type() {
+    return UNKNOWN;
 }
