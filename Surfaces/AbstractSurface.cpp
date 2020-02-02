@@ -180,6 +180,7 @@ void AbstractSurface::getCanonical() {
 
     temporary.print();
 
+    VF added(3, 0);
 
     if (is_zero(temporary.X()) && is_zero(temporary.Y()) && is_zero(temporary.Z())) {
         // a TODO: => 5
@@ -188,18 +189,21 @@ void AbstractSurface::getCanonical() {
             // x^2 => (x + X/2XX)^2
             // D => D - X*X/4XX
             temporary.D() -= temporary.X() * temporary.X() / (4 * temporary.XX());
+            added[0] = - temporary.X() / temporary.XX() / 2;
             temporary.X() = 0;
         }
         if (!is_zero(temporary.Y()) && !is_zero(temporary.YY())) {
             // y^2 => (y + Y/2YY)^2
             // D => D - Y*Y/4YY
             temporary.D() -= temporary.Y() * temporary.Y() / (4 * temporary.YY());
+            added[1] = - temporary.Y() / temporary.YY() / 2;
             temporary.Y() = 0;
         }
         if (!is_zero(temporary.Z()) && !is_zero(temporary.ZZ())) {
             // z^2 => (z + Z/2ZZ)^2
             // D => D - Z*Z/4ZZ
             temporary.D() -= temporary.Z() * temporary.Z() / (4 * temporary.ZZ());
+            added[2] = - (temporary.Z() / (temporary.ZZ() * 2));
             temporary.Z() = 0;
         }
 
@@ -215,24 +219,33 @@ void AbstractSurface::getCanonical() {
         if (!is_zero(temporary.X()) && !is_zero(temporary.D())) {
             // x => (x + D)
             // D => 0
+            added[0] = -temporary.D() / temporary.X();
             temporary.D() = 0;
         }
 
         if (!is_zero(temporary.Y()) && !is_zero(temporary.D())) {
             // y => (y + D)
             // D => 0
+            added[1] = -temporary.D() / temporary.Y();
             temporary.D() = 0;
         }
 
         if (!is_zero(temporary.Z()) && !is_zero(temporary.D())) {
             // z => (z + D)
             // D => 0
+            added[2] = -temporary.D() / temporary.Z();
             temporary.D() = 0;
         }
 
     }
 
     temporary.print();
+    cout << endl;
+
+    for (auto el : added) {
+        cout << el << " ";
+    }
+    cout << endl;
 
 
 }
