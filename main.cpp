@@ -7,7 +7,7 @@
 #include "Surfaces/Paraboloid.h"
 #include "Evaluations/Equation.h"
 #include "Evaluations/EquationSystem.h"
-#include "Surfaces/SurfaceEquation.h"
+#include "SurfaceEquations/SurfaceEquation.h"
 
 typedef tuple<float, float, float> tuple3f;
 typedef vector<Point> VP;
