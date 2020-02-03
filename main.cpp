@@ -14,6 +14,8 @@ typedef tuple<float, float, float, float> tuple4f;
 typedef vector<Point> VP;
 typedef vector<float> VF;
 
+bool equal_surfaces = false;
+
 using namespace std;
 
 GLfloat a = -90.f, b = 0.f, c = -90.f;
@@ -543,34 +545,35 @@ void display(GLFWwindow *window) {
 //
 //        glTranslatef(-x, -y, -z);
 
+        if (!equal_surfaces) {
+            glPushMatrix();
 
-        glPushMatrix();
+            //make_intersect();
 
-        //make_intersect();
+            draw_intersect(intersect);
 
-        draw_intersect(intersect);
+            glPushMatrix();
+            float mulm[] = {1, 0, 0, 0,
+                            0, 1, 0, 0,
+                            0, 0, 1, 0,
+                            0, 0, 0, 1};
 
-        glPushMatrix();
-        float mulm[] = {1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 0, 1};
-
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                mulm[4 * i + j] = first_equation->get_mul_matrix()[i][j];
+            for (int i = 0; i < 3; ++i) {
+                for (int j = 0; j < 3; ++j) {
+                    mulm[4 * i + j] = first_equation->get_mul_matrix()[i][j];
+                }
+                mulm[12 + i] = first_equation->get_additional_vector()[i];
             }
-            mulm[12 + i] = first_equation->get_additional_vector()[i];
+
+            glMultMatrixf(mulm);
+
+
+            //glScaled(1, 5, 1);
+
+            drawSurface(vertices_first, {0, 1, 0, 0.3}, 0);
+
+            glPopMatrix();
         }
-
-        glMultMatrixf(mulm);
-
-
-        //glScaled(1, 5, 1);
-
-        drawSurface(vertices_first, {0, 1, 0, 0.25}, 0);
-
-        glPopMatrix();
 
         float mulm2[] = {1, 0, 0, 0,
                          0, 1, 0, 0,
@@ -584,8 +587,9 @@ void display(GLFWwindow *window) {
         }
         glMultMatrixf(mulm2);
 
+        tuple4f second_color = (equal_surfaces ? tuple4f{0, 0, 1, 1} : tuple4f{1, 0, 0, 0.3});
 
-        drawSurface(vertices_second, {1, 0, 0, 0.5}, 0);
+        drawSurface(vertices_second, second_color, 0);
 
         glPopMatrix();
 
@@ -667,6 +671,20 @@ AbstractSurface *make_surface(SurfaceEquation &se) {
 int main(int argc, char **argv) {
 
     read_equations();
+
+    float coef = 0;
+    bool equals_temp = true;
+    for (int i = 0; i < 10; ++i) {
+        if (!is_zero(first_coefs[i]) && !is_zero(second_coefs[i])) {
+            if (is_zero(coef)) {
+                coef = first_coefs[i] / second_coefs[i];
+            } else {
+                equals_temp = equals_temp && (equal(coef, first_coefs[i] / second_coefs[i]));
+            }
+        }
+    }
+
+    equal_surfaces = equals_temp;
 
     first_equation = new SurfaceEquation(first_coefs);
     second_equation = new SurfaceEquation(second_coefs);
