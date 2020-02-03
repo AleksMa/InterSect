@@ -16,6 +16,7 @@ typedef vector<float> VF;
 using namespace std;
 
 GLfloat a = -90.f, b = 0.f, c = -90.f;
+//GLfloat a = 0.f, b = 0.f, c = 0.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
 
 bool transp = false;
@@ -24,7 +25,7 @@ bool typefl = true;
 
 vector<float> first_coefs, second_coefs;
 
-QuadricEquation first_equation, second_equation;
+SurfaceEquation *first_equation, *second_equation;
 
 AbstractSurface *first_surface, *second_surface;
 
@@ -102,7 +103,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
 //        0.f, 0.f, 1.f, 0.5f,
 //        0.f, 0.f, 0.f, 1.f };
 
-void drawSurface(const vector<Point>& Vertices, tuple4f color, float move) {
+void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
 
     auto[R, G, B, A] = color;
 
@@ -281,10 +282,9 @@ GLFWwindow *initWindow(const int resX, const int resY) {
     glCullFace(GL_BACK);
 
 
-
-    glAlphaFunc ( GL_GREATER,  0.2 );
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND); //Enable blending.
+    glEnable(GL_COLOR_MATERIAL);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
 
 //    GLfloat lightpos[] = {0., 0., 1., 0.};
@@ -348,6 +348,12 @@ void display(GLFWwindow *window) {
                         0, 1, 0, 0,
                         0, 0, 1, 0,
                         0, 0, 0, 1};
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                mulm[4 * i + j] = first_equation->get_mul_matrix()[i][j];
+            }
+            mulm[12 + i] = first_equation->get_additional_vector()[i];
+        }
         glMultMatrixf(mulm);
 
 
@@ -360,7 +366,13 @@ void display(GLFWwindow *window) {
         float mulm2[] = {1, 0, 0, 0,
                          0, 1, 0, 0,
                          0, 0, 1, 0,
-                         0, -50, -50, 1};
+                         0, 0, 0, 1};
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                mulm2[4 * i + j] = second_equation->get_mul_matrix()[i][j];
+            }
+            mulm2[12 + i] = second_equation->get_additional_vector()[i];
+        }
         glMultMatrixf(mulm2);
 
 
@@ -447,19 +459,16 @@ int main(int argc, char **argv) {
 
     read_equations();
 
-    SurfaceEquation first_se(first_coefs);
-    SurfaceEquation second_se(second_coefs);
+    first_equation = new SurfaceEquation(first_coefs);
+    second_equation = new SurfaceEquation(second_coefs);
 
-    first_se.canonizate();
-    cout << "FIRST TYPE: " << first_se.get_type() << endl;
-    first_surface = make_surface(first_se);
+    first_equation->canonizate();
+    cout << "FIRST TYPE: " << first_equation->get_type() << endl;
+    first_surface = make_surface(*first_equation);
 
-    second_se.canonizate();
-    cout << "SECOND TYPE: " << second_se.get_type() << endl;
-    second_surface = make_surface(second_se);
-
-    first_equation = first_se.get_canonical();
-    second_equation = second_se.get_canonical();
+    second_equation->canonizate();
+    cout << "SECOND TYPE: " << second_equation->get_type() << endl;
+    second_surface = make_surface(*second_equation);
 
 
     GLFWwindow *window = initWindow(800, 600);
@@ -471,6 +480,10 @@ int main(int argc, char **argv) {
 
     delete first_surface;
     delete second_surface;
+
+    delete first_equation;
+    delete second_equation;
+
 
 
 

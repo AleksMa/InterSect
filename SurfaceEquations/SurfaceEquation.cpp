@@ -257,10 +257,16 @@ QuadricEquation SurfaceEquation::canonizate() {
         // Ellipsoid or hyperboloid
         if (greater_zero(temporary.XX()) && greater_zero(temporary.YY()) && greater_zero(temporary.ZZ()) &&
             !greater_zero(temporary.D())) {
+            if (!equal(temporary.D(), -1.)) {
+                temporary.mul(-1 / temporary.D());
+            }
             type = ELLIPSOID;
         } else if (less_zero(temporary.XX()) && less_zero(temporary.YY()) && less_zero(temporary.ZZ()) &&
                    !less_zero(temporary.D())) {
             temporary.mul(-1);
+            if (!equal(temporary.D(), -1.)) {
+                temporary.mul(-1 / temporary.D());
+            }
             type = ELLIPSOID;
         }
     }
