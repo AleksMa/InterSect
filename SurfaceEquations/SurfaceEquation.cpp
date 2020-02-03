@@ -250,9 +250,42 @@ QuadricEquation SurfaceEquation::canonizate() {
 
     }
 
+    temporary.print();
+    cout << endl;
+
+    if (!is_zero(temporary.XX()) && !is_zero(temporary.YY()) && !is_zero(temporary.ZZ())) {
+        // Ellipsoid or hyperboloid
+        if (greater_zero(temporary.XX()) && greater_zero(temporary.YY()) && greater_zero(temporary.ZZ()) &&
+            !greater_zero(temporary.D())) {
+            type = ELLIPSOID;
+        } else if (less_zero(temporary.XX()) && less_zero(temporary.YY()) && less_zero(temporary.ZZ()) &&
+                   !less_zero(temporary.D())) {
+            temporary.mul(-1);
+            type = ELLIPSOID;
+        }
+    }
+
+    if (not_zero(temporary.XX()) && not_zero(temporary.YY()) && not_zero(temporary.Z())) {
+        // Paraboloid
+        if (less_zero(temporary.XX()) && less_zero(temporary.YY())) {
+            temporary.mul(-1);
+        }
+
+        if (greater_zero(temporary.XX()) && greater_zero(temporary.YY())) {
+            if (less_zero(temporary.Z())) {
+                type = PARABOLOID_ELLIPTIC;
+            } else {
+                temporary.Z() *= -1;
+                mul_finally[2][2] = -1;
+                type = PARABOLOID_ELLIPTIC;
+            }
+        }
+    }
+
 
     temporary.print();
     cout << endl;
+
 
     for (auto el : added) {
         cout << el << " ";
@@ -334,5 +367,9 @@ VF SurfaceEquation::get_additional_vector() {
 }
 
 surface_type SurfaceEquation::get_type() {
-    return UNKNOWN;
+    return type;
+}
+
+QuadricEquation SurfaceEquation::get_canonical() {
+    return temporary;
 }

@@ -9,7 +9,7 @@
 #include "Evaluations/EquationSystem.h"
 #include "SurfaceEquations/SurfaceEquation.h"
 
-typedef tuple<float, float, float> tuple3f;
+typedef tuple<float, float, float, float> tuple4f;
 typedef vector<Point> VP;
 typedef vector<float> VF;
 
@@ -22,8 +22,11 @@ bool transp = false;
 bool hide = false;
 bool typefl = true;
 
-vector<float> first_surface;
-vector<float> second_surface;
+vector<float> first_coefs, second_coefs;
+
+QuadricEquation first_equation, second_equation;
+
+AbstractSurface *first_surface, *second_surface;
 
 
 
@@ -99,19 +102,9 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
 //        0.f, 0.f, 1.f, 0.5f,
 //        0.f, 0.f, 0.f, 1.f };
 
-vector<Point> makeEllipsoid(float A, float B, float C) {
-    Ellipsoid ellipsoid(A, B, C);
-    return ellipsoid.makeEllipsoidMash();
-}
+void drawSurface(const vector<Point>& Vertices, tuple4f color, float move) {
 
-vector<Point> makeParaboloid(float A, float B) {
-    Paraboloid paraboloid(A, B);
-    return paraboloid.makeMash();
-}
-
-void drawSurface(vector<Point> Vertices, tuple3f color, float move) {
-
-    auto[R, G, B] = color;
+    auto[R, G, B, A] = color;
 
     int type = (typefl ? GL_LINE_STRIP : GL_QUADS
     );
@@ -121,7 +114,7 @@ void drawSurface(vector<Point> Vertices, tuple3f color, float move) {
     glColor4f(R, G, B, 1);
 
     if (transp) {
-        glColor4f(R, G, B, 0.3);
+        glColor4f(R, G, B, A);
         if (!typefl)
             type = GL_QUADS;
     }
@@ -138,8 +131,8 @@ void drawSurface(vector<Point> Vertices, tuple3f color, float move) {
 }
 
 void drawIntersect() {
-    VF ellipsoid = VF{1. / (100 * 100), 1. / (150 * 150), 1. / (100 * 100)};
-    VF paraboloid = VF{1. / (10 * 10), 1. / (10 * 10), 0.};
+    VF ellipsoid = {1. / (100 * 100), 1. / (150 * 150), 1. / (100 * 100)};
+    VF paraboloid = {1. / (10 * 10), 1. / (10 * 10), 0.};
 
     float eps = 1;
 
@@ -271,7 +264,7 @@ GLFWwindow *initWindow(const int resX, const int resY) {
 
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    GLFWwindow *window = glfwCreateWindow(resX, resY, "TEST", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(resX, resY, "InterSect", NULL, NULL);
 
     if (window == nullptr) {
         fprintf(stderr, "Failed to open GLFW window.\n");
@@ -287,8 +280,12 @@ GLFWwindow *initWindow(const int resX, const int resY) {
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
+
+
+    glAlphaFunc ( GL_GREATER,  0.2 );
+    glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND); //Enable blending.
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
 
 //    GLfloat lightpos[] = {0., 0., 1., 0.};
 //    glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
@@ -300,12 +297,9 @@ GLFWwindow *initWindow(const int resX, const int resY) {
 //void display(GLFWwindow *window, vector<float> first_params, vector<float> second_params) {
 void display(GLFWwindow *window) {
 
-    vector<Point> vertices_first = makeEllipsoid(sqrt(1 / first_surface[0]),
-                                                 sqrt(1 / first_surface[1]),
-                                                 sqrt(1 / first_surface[2]));
+    vector<Point> vertices_first = first_surface->makeMash();
 
-    vector<Point> vertices_second = makeParaboloid(sqrt(1 / second_surface[0]),
-                                                   sqrt(1 / second_surface[1]));
+    vector<Point> vertices_second = second_surface->makeMash();
 
 //    vector<Point> vertices_first = makeEllipsoid(100, 150, 100);
 //    vector<Point> vertices_second = makeParaboloid(10, 10);
@@ -319,10 +313,10 @@ void display(GLFWwindow *window) {
         glViewport(0, 0, windowWidth, windowHeight);
 
         //glClearColor(0.7, 1, 1, 1.0);
-        glClearColor(0, 0, 0, 1.0);
+        glClearColor(0, 0, 0, 1.);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glMatrixMode(GL_PROJECTION);
+        //glMatrixMode(GL_PROJECTION);
 
         glLoadIdentity();
 
@@ -359,7 +353,7 @@ void display(GLFWwindow *window) {
 
         //glScaled(1, 5, 1);
 
-        drawSurface(vertices_first, {0, 1, 0}, 0);
+        drawSurface(vertices_first, {0, 1, 0, 0.25}, 0);
 
         glPopMatrix();
 
@@ -369,7 +363,8 @@ void display(GLFWwindow *window) {
                          0, -50, -50, 1};
         glMultMatrixf(mulm2);
 
-        drawSurface(vertices_second, {1, 0, 0}, 0);
+
+        drawSurface(vertices_second, {1, 0, 0, 0.5}, 0);
 
         glPopMatrix();
 
@@ -413,46 +408,85 @@ vector<string> split(const string &s) {
     return ret;
 }
 
+bool read_equations() {
+    string input_file = "/home/alexey/CLionProjects/InterSect/config.txt";
+    string source = read_file(input_file);
+    vector<string> params = split(source);
+    if (params.size() < 30)
+        return false;
+    vector<string> first_params(params.begin() + 10, params.begin() + 20);
+    vector<string> second_params(params.begin() + 20, params.begin() + 30);
+    for (int i = 0; i < first_params.size(); ++i) {
+        cout << i << " " << first_params[i] << endl;
+        first_coefs.push_back(stof(first_params[i]));
+        cout << i << " " << first_coefs[i] << endl;
+    }
+    for (int i = 0; i < second_params.size(); ++i) {
+        cout << i << " " << second_params[i] << endl;
+        second_coefs.push_back(stof(second_params[i]));
+        cout << i << " " << second_coefs[i] << endl;
+    }
+    return true;
+}
+
+AbstractSurface *make_surface(SurfaceEquation &se) {
+    if (se.get_type() == ELLIPSOID) {
+        cout << "create Ellipsoid: " << endl;
+        cout << se.get_canonical().XX() << 1 / se.get_canonical().XX() << endl;
+        return new Ellipsoid(sqrt(1 / se.get_canonical().XX()),
+                             sqrt(1 / se.get_canonical().YY()),
+                             sqrt(1 / se.get_canonical().ZZ()));
+    } else if (se.get_type() == PARABOLOID_ELLIPTIC) {
+        return new Paraboloid(sqrt(1 / se.get_canonical().XX()),
+                              sqrt(1 / se.get_canonical().YY()));
+    }
+    return nullptr;
+}
 
 int main(int argc, char **argv) {
-//    string input_file = "/home/alexey/CLionProjects/InterSect/config.txt";
-//    string source = read_file(input_file);
-//    vector<string> params = split(source);
-//    if (params.size() < 30)
-//        exit(1);
-//    vector<string> first_params(params.begin() + 10, params.begin() + 20);
-//    vector<string> second_params(params.begin() + 20, params.begin() + 30);
-//    for (int i = 0; i < first_params.size(); ++i) {
-//        cout << i << " " << first_params[i] << endl;
-//        first_surface.push_back(stof(first_params[i]));
-//        cout << i << " " << first_surface[i] << endl;
-//    }
-//    for (int i = 0; i < second_params.size(); ++i) {
-//        cout << i << " " << second_params[i] << endl;
-//        second_surface.push_back(stof(second_params[i]));
-//        cout << i << " " << second_surface[i] << endl;
-//    }
-//
-//    GLFWwindow *window = initWindow(800, 600);
-//    if (nullptr != window) {
-//        display(window);
-//    }
-//    glfwDestroyWindow(window);
-//    glfwTerminate();
+
+    read_equations();
+
+    SurfaceEquation first_se(first_coefs);
+    SurfaceEquation second_se(second_coefs);
+
+    first_se.canonizate();
+    cout << "FIRST TYPE: " << first_se.get_type() << endl;
+    first_surface = make_surface(first_se);
+
+    second_se.canonizate();
+    cout << "SECOND TYPE: " << second_se.get_type() << endl;
+    second_surface = make_surface(second_se);
+
+    first_equation = first_se.get_canonical();
+    second_equation = second_se.get_canonical();
+
+
+    GLFWwindow *window = initWindow(800, 600);
+    if (nullptr != window) {
+        display(window);
+    }
+    glfwDestroyWindow(window);
+    glfwTerminate();
+
+    delete first_surface;
+    delete second_surface;
 
 
 
 
 
 //    SurfaceEquation as(VF{1, 1, 0, 0, 0, 0, 2, -4, 2, 1});
-// quite OK
-
-//    SurfaceEquation as(VF{1, 0, 0, 0, 0, 0, 0, 6, -8, 10});
-// quite OK
-
-    SurfaceEquation as(VF{3, -7, 3, 8, -8, -8, 10, -14, -6, -8});
-
-    as.canonizate();
+//// quite OK
+//
+////    SurfaceEquation as(VF{1, 0, 0, 0, 0, 0, 0, 6, -8, 10});
+//// quite OK
+//
+////    SurfaceEquation as(VF{3, -7, 3, 8, -8, -8, 10, -14, -6, -8});
+//
+//    as.canonizate();
+//
+//    cout << as.get_type() << endl;
 
     return 0;
 }

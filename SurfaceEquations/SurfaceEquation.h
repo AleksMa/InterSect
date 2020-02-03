@@ -34,7 +34,7 @@ public:
 
     QuadricEquation canonizate();
 
-    QuadricEquation get_canonical;
+    QuadricEquation get_canonical();
 
     vector<VF> get_mul_matrix();
     VF get_additional_vector();

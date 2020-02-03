@@ -3,13 +3,17 @@
 
 #include <math.h>
 
-#define epsi 1e-3;
+#define epsi 1e-7;
 
 static bool is_zero(float num) { return abs(num) < epsi; }
+
+static bool not_zero(float num) { return !is_zero(num); }
 
 static bool equal(float left, float right) { return abs(left - right) < epsi; }
 
 static bool less_zero(float num) { return !is_zero(num) && num < -epsi; }
+
+static bool greater_zero(float num) { return !is_zero(num) && num > epsi; }
 
 static bool is_zero_eps(float num, float epsilon) { return abs(num) < epsilon; }
 

@@ -60,3 +60,9 @@ void QuadricEquation::print() {
     }
     cout << endl;
 }
+
+void QuadricEquation::mul(float m) {
+    for (float & el : equation) {
+        el *= m;
+    }
+}

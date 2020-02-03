@@ -29,6 +29,8 @@ struct QuadricEquation {
         return *this;
     }
 
+    void mul(float m);
+
     float &XX();
     float &YY();
     float &ZZ();
@@ -39,6 +41,7 @@ struct QuadricEquation {
     float &Y();
     float &Z();
     float &D();
+
     void print();
 };
 

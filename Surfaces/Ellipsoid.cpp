@@ -6,9 +6,14 @@
 #include <iostream>
 #include "Ellipsoid.h"
 
-Ellipsoid::Ellipsoid(float a, float b, float c) : A(a), B(b), C(c) {}
+Ellipsoid::Ellipsoid(float a, float b, float c) : A(a), B(b), C(c) {
+    cout << "new Ellipsoid: " << endl;
+    cout << A << endl;
+    cout << B << endl;
+    cout << C << endl;
+}
 
-vector<Point> Ellipsoid::makeEllipsoidVertices() {
+vector<Point> Ellipsoid::makeVertices() {
     N = C / 20 + 5;
     M = 20;
     vector<Point> vertices;
@@ -27,8 +32,8 @@ vector<Point> Ellipsoid::makeEllipsoidVertices() {
     return vertices;
 }
 
-vector<Point> Ellipsoid::makeEllipsoidMash() {
-    vector<Point> Vertices = this->makeEllipsoidVertices();
+vector<Point> Ellipsoid::makeMash() {
+    vector<Point> Vertices = this->makeVertices();
     vector<Point> finalVerticies;
     for (int i = 0; i < M; i++) {
         Point p = Vertices[0];

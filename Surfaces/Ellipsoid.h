@@ -7,18 +7,22 @@
 
 #include <vector>
 #include "../Primary/Point.h"
+#include "AbstractSurface.h"
+
 using namespace std;
 
-class Ellipsoid {
-public:
+class Ellipsoid : public AbstractSurface {
+private:
     float A, B, C;
 
     int N, M;
 
+public:
     Ellipsoid(float a, float b, float c);
 
-    vector<Point> makeEllipsoidVertices();
-    vector<Point> makeEllipsoidMash();
+    vector<Point> makeVertices() override;
+
+    vector<Point> makeMash() override;
 
 };
 
