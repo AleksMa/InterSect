@@ -11,6 +11,7 @@
 #include "Calculations.cpp"
 
 #include <utility>
+#include <iostream>
 
 #define M_2PI (2.f*M_PI)
 
@@ -25,6 +26,7 @@ Equation::Equation(vector<float> coef) : equation(std::move(coef)) {
         }
         equation[3] = 1.f;
     }
+    //cout << equation[3] << "X^3 + " << equation[2] << "X^2 + " << equation[1] << "X + " << equation[0] << endl << endl;
 }
 
 vector<float> Equation::solve() {

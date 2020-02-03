@@ -379,3 +379,7 @@ surface_type SurfaceEquation::get_type() {
 QuadricEquation SurfaceEquation::get_canonical() {
     return temporary;
 }
+
+QuadricEquation SurfaceEquation::get_equation() {
+    return equation;
+}
