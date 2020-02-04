@@ -13,16 +13,16 @@ using namespace std;
 
 class Ellipsoid : public AbstractSurface {
 private:
+    int N, M;
+
     float A, B, C;
 
-    int N, M;
+    vector<Point> make_vertices();
 
 public:
     Ellipsoid(float a, float b, float c);
 
-    vector<Point> makeVertices() override;
-
-    vector<Point> makeMash() override;
+    vector<Point> make_mash() override;
 
 };
 

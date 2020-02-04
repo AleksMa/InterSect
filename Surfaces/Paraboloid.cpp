@@ -4,7 +4,7 @@
 
 Paraboloid::Paraboloid(float a, float b) : A(a), B(b) {}
 
-vector<Point> Paraboloid::makeVertices() {
+vector<Point> Paraboloid::make_vertices() {
     N = 130 / 10 + 5;
     M = 20;
     vector<Point> vertices;
@@ -23,8 +23,8 @@ vector<Point> Paraboloid::makeVertices() {
     return vertices;
 }
 
-vector<Point> Paraboloid::makeMash() {
-    vector<Point> Vertices = this->makeVertices();
+vector<Point> Paraboloid::make_mash() {
+    vector<Point> Vertices = this->make_vertices();
     vector<Point> finalVerticies;
     for (int i = 0; i < M; i++) {
         Point p = Vertices[0];

@@ -13,12 +13,12 @@ Ellipsoid::Ellipsoid(float a, float b, float c) : A(a), B(b), C(c) {
     cout << C << endl;
 }
 
-vector<Point> Ellipsoid::makeVertices() {
+vector<Point> Ellipsoid::make_vertices() {
     N = C / 20 + 5;
     M = 20;
     vector<Point> vertices;
     const float pi = 3.14159265358979323846;
-    vertices.push_back(Point(0.f, 0.f, C));
+    vertices.emplace_back(0.f, 0.f, C);
     for (int i = 1; i < 2 * N; i++) {
         for (int j = 0; j < M; j++) {
             vertices.push_back(Point(
@@ -28,12 +28,12 @@ vector<Point> Ellipsoid::makeVertices() {
             ));
         }
     }
-    vertices.push_back(Point(0.f, 0.f, -C));
+    vertices.emplace_back(0.f, 0.f, -C);
     return vertices;
 }
 
-vector<Point> Ellipsoid::makeMash() {
-    vector<Point> Vertices = this->makeVertices();
+vector<Point> Ellipsoid::make_mash() {
+    vector<Point> Vertices = this->make_vertices();
     vector<Point> finalVerticies;
     for (int i = 0; i < M; i++) {
         Point p = Vertices[0];

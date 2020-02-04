@@ -135,28 +135,26 @@ void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
 }
 
 vector<Point> make_intersect() {
-//    VF ellipsoid = {1. / (100 * 100), 1. / (150 * 150), 1. / (100 * 100)};
-//    VF paraboloid = {1. / (10 * 10), 1. / (10 * 10), 0.};
 
     vector<Point> intersect;
 
     auto first_quadric = first_equation->get_canonical();
     auto second_quadric = second_equation->get_equation();
 
-    float intersect_epsilon = 1, edge_epsilon = 5;
+    float intersect_epsilon = 1, edge_epsilon = 0.5;
 
     float max_z = 101;
     float min_z = -101;
 
 //    glColor3f(0, 0, 1);
 //    glBegin(GL_POINTS);
-
-    for (float i = max_z; i >= min_z; i -= 0.3) {
+//
+    for (float i = max_z; i >= min_z; i -= 0.1) {
 //        float rx = 1 - float(i * i) * (ellipsoid[2]);
         float rx = -first_quadric.D() - i * i * first_quadric.ZZ() - i * first_quadric.Z();
         VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
 
-        for (float j = sqrt(1 / t[1]) + 1; j >= sqrt(1 / t[1]) - 1; j -= 0.1) {
+        for (float j = sqrt(1 / t[1]) + 1; j >= sqrt(1 / t[1]) - 1; j -= 0.01) {
             if (less_zero(float(j * j) * (t[1]) - 1) || is_zero(float(j * j) * (t[1]) - 1)) {
                 float ry = 1 - float(j * j) * t[1];
                 ry = (ry > 0 ? ry : 0);
@@ -176,70 +174,70 @@ vector<Point> make_intersect() {
                         less_correct = true;
                 }
 
-                if (!correct || !less_correct) {
-                    z++;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, edge_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, edge_epsilon))
-                            less_correct = true;
-                    }
-                }
-
-                if (!correct || !less_correct) {
-                    z -= 2;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, edge_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, edge_epsilon))
-                            less_correct = true;
-                    }
-                }
-
-                if (!correct || !less_correct) {
-                    z++;
-                    y++;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, edge_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, edge_epsilon))
-                            less_correct = true;
-                    }
-                }
-
-                if (!correct || !less_correct) {
-                    y -= 2;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, edge_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, edge_epsilon))
-                            less_correct = true;
-                    }
-                }
+//                if (!correct || !less_correct) {
+//                    z++;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, edge_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, edge_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
+//
+//                if (!correct || !less_correct) {
+//                    z -= 2;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, edge_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, edge_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
+//
+//                if (!correct || !less_correct) {
+//                    z++;
+//                    y++;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, edge_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, edge_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
+//
+//                if (!correct || !less_correct) {
+//                    y -= 2;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, edge_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, edge_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
 
                 if (correct) {
                     intersect.push_back(Point(first_x, j, i));
@@ -251,11 +249,11 @@ vector<Point> make_intersect() {
         }
     }
 
-    for (int i = sqrt(1 / first_quadric.ZZ()); i >= -sqrt(1 / first_quadric.ZZ()); i -= 1) {
+    for (float i = sqrt(1 / first_quadric.ZZ()); i >= -sqrt(1 / first_quadric.ZZ()); i -= 1) {
         float rx = -first_quadric.D() - float(i * i) * first_quadric.ZZ() - i * first_quadric.Z();
         VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
 
-        for (int j = sqrt(1 / t[1]); j >= -sqrt(1 / t[1]); j -= 1) {
+        for (float j = sqrt(1 / t[1]); j >= -sqrt(1 / t[1]); j -= 0.1) {
             if (1 >= float(j * j) * (t[1])) {
                 float ry = 1 - float(j * j) * t[1];
                 float y = j, z = i;
@@ -268,77 +266,76 @@ vector<Point> make_intersect() {
                                   second_quadric.XX(), 0})
                         .solve();
                 for (float second_x : eq) {
-                    //cout << "SOLVED: " << second_x << " " << first_x << endl;
                     if (equal_eps(second_x, first_x, intersect_epsilon))
                         correct = true;
                     if (equal_eps(second_x, -first_x, intersect_epsilon))
                         less_correct = true;
                 }
 
-                if (!correct || !less_correct) {
-                    z++;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, intersect_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, intersect_epsilon))
-                            less_correct = true;
-                    }
-                }
-
-                if (!correct || !less_correct) {
-                    z -= 2;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, intersect_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, intersect_epsilon))
-                            less_correct = true;
-                    }
-                }
-
-                if (!correct || !less_correct) {
-                    z++;
-                    y++;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, intersect_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, intersect_epsilon))
-                            less_correct = true;
-                    }
-                }
-
-                if (!correct || !less_correct) {
-                    y -= 2;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, intersect_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, intersect_epsilon))
-                            less_correct = true;
-                    }
-                }
+//                if (!correct || !less_correct) {
+//                    z++;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, intersect_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, intersect_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
+//
+//                if (!correct || !less_correct) {
+//                    z -= 2;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, intersect_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, intersect_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
+//
+//                if (!correct || !less_correct) {
+//                    z++;
+//                    y++;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, intersect_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, intersect_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
+//
+//                if (!correct || !less_correct) {
+//                    y -= 2;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, intersect_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, intersect_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
 
                 if (correct) {
                     intersect.emplace_back(first_x, j, i);
@@ -349,12 +346,12 @@ vector<Point> make_intersect() {
             }
         }
     }
-
-    for (int i = max_z; i >= min_z; i -= 1) {
+//
+    for (float i = max_z; i >= min_z; i -= 0.1) {
         float rx = -first_quadric.D() - i * i * first_quadric.ZZ() - i * first_quadric.Z();
         VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
 
-        for (float j = -sqrt(1 / t[1]) + 2; j >= -sqrt(1 / t[1]) - 2; j -= 0.1) {
+        for (float j = -sqrt(1 / t[1]) + 1; j >= -sqrt(1 / t[1]) - 1; j -= 0.01) {
             if (1 >= float(j * j) * (t[1])) {
                 float ry = 1 - float(j * j) * t[1];
                 float y = j, z = i;
@@ -373,70 +370,70 @@ vector<Point> make_intersect() {
                         less_correct = true;
                 }
 
-                if (!correct || !less_correct) {
-                    z++;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, edge_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, edge_epsilon))
-                            less_correct = true;
-                    }
-                }
-
-                if (!correct || !less_correct) {
-                    z -= 2;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, edge_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, edge_epsilon))
-                            less_correct = true;
-                    }
-                }
-
-                if (!correct || !less_correct) {
-                    z++;
-                    y++;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, edge_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, edge_epsilon))
-                            less_correct = true;
-                    }
-                }
-
-                if (!correct || !less_correct) {
-                    y -= 2;
-                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                   y * z * second_quadric.YZ()
-                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                   second_quadric.XX(), 0})
-                            .solve();
-                    for (float second_x : eq) {
-                        if (equal_eps(second_x, first_x, edge_epsilon))
-                            correct = true;
-                        if (equal_eps(second_x, -first_x, edge_epsilon))
-                            less_correct = true;
-                    }
-                }
+//                if (!correct || !less_correct) {
+//                    z++;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, edge_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, edge_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
+//
+//                if (!correct || !less_correct) {
+//                    z -= 2;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, edge_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, edge_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
+//
+//                if (!correct || !less_correct) {
+//                    z++;
+//                    y++;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, edge_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, edge_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
+//
+//                if (!correct || !less_correct) {
+//                    y -= 2;
+//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                   y * z * second_quadric.YZ()
+//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                   second_quadric.XX(), 0})
+//                            .solve();
+//                    for (float second_x : eq) {
+//                        if (equal_eps(second_x, first_x, edge_epsilon))
+//                            correct = true;
+//                        if (equal_eps(second_x, -first_x, edge_epsilon))
+//                            less_correct = true;
+//                    }
+//                }
 
                 if (correct) {
                     intersect.push_back(Point(first_x, j, i));
@@ -453,7 +450,7 @@ vector<Point> make_intersect() {
 
 void draw_intersect(VP intersect) {
     glColor4f(0, 0, 1, 1);
-    glPointSize(3);
+    glPointSize(5);
     glBegin(GL_POINTS);
     for (Point p : intersect) {
         //cout << p.x << " " << p.y << " " << p.z << endl;
@@ -503,9 +500,9 @@ GLFWwindow *initWindow(const int resX, const int resY) {
 //void display(GLFWwindow *window, vector<float> first_params, vector<float> second_params) {
 void display(GLFWwindow *window) {
 
-    vector<Point> vertices_first = first_surface->makeMash();
+    vector<Point> vertices_first = first_surface->make_mash();
 
-    vector<Point> vertices_second = second_surface->makeMash();
+    vector<Point> vertices_second = second_surface->make_mash();
 
     vector<Point> intersect = make_intersect();
 
@@ -521,7 +518,7 @@ void display(GLFWwindow *window) {
         glViewport(0, 0, windowWidth, windowHeight);
 
         //glClearColor(0.7, 1, 1, 1.0);
-        glClearColor(0, 0, 0, 1.);
+        glClearColor(1, 1, 1, 1.);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //glMatrixMode(GL_PROJECTION);
@@ -657,7 +654,6 @@ bool read_equations() {
 AbstractSurface *make_surface(SurfaceEquation &se) {
     if (se.get_type() == ELLIPSOID) {
         cout << "create Ellipsoid: " << endl;
-        cout << se.get_canonical().XX() << 1 / se.get_canonical().XX() << endl;
         return new Ellipsoid(sqrt(1 / se.get_canonical().XX()),
                              sqrt(1 / se.get_canonical().YY()),
                              sqrt(1 / se.get_canonical().ZZ()));
