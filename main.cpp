@@ -25,6 +25,7 @@ GLfloat x = 0.f, y = 0.f, z = 0.f;
 bool transp = false;
 bool hide = false;
 bool typefl = true;
+bool orts = true;
 
 vector<float> first_coefs, second_coefs;
 
@@ -50,6 +51,9 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
 
         if (key == GLFW_KEY_BACKSLASH)
             transp = !transp;
+
+        if (key == GLFW_KEY_BACKSPACE)
+            orts = !orts;
     }
 
     if (action = GLFW_REPEAT) {
@@ -124,6 +128,7 @@ void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
     }
     glPointSize(5);
     glLineWidth(1);
+
 
     if (!hide) {
         glBegin(type);
@@ -496,6 +501,75 @@ GLFWwindow *initWindow(const int resX, const int resY) {
     return window;
 }
 
+#define ORT_LENGTH 300
+#define ORT_WIDTH 3
+
+void render_x_ort(){
+    glColor4f(1, 0, 0, 1);
+    glLineWidth(ORT_WIDTH);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(0, 0, 0);
+    glVertex3f(ORT_LENGTH, 0, 0);
+    glVertex3f(ORT_LENGTH - 10, 10, 0);
+    glVertex3f(ORT_LENGTH, 0, 0);
+    glVertex3f(ORT_LENGTH - 10, -10, 0);
+    glEnd();
+
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(ORT_LENGTH + 20, 5, 5);
+    glVertex3f(ORT_LENGTH + 20, -5, -5);
+    glEnd();
+
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(ORT_LENGTH + 20, 5, -5);
+    glVertex3f(ORT_LENGTH + 20, -5, 5);
+    glEnd();
+}
+
+
+void render_y_ort(){
+    glColor4f(0, 1, 0, 1);
+    glLineWidth(ORT_WIDTH);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(0, 0, 0);
+    glVertex3f(0, ORT_LENGTH, 0);
+    glVertex3f(10, ORT_LENGTH - 10, 0);
+    glVertex3f(0, ORT_LENGTH, 0);
+    glVertex3f(-10, ORT_LENGTH - 10, 0);
+    glEnd();
+
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-5, ORT_LENGTH + 20, 7);
+    glVertex3f(7, ORT_LENGTH + 20, -5);
+    glEnd();
+
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(0, ORT_LENGTH + 20, 0);
+    glVertex3f(7, ORT_LENGTH + 20, 7);
+    glEnd();
+}
+
+
+void render_z_ort(){
+    glColor4f(0, 0, 1, 1);
+    glLineWidth(ORT_WIDTH);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(0, 0, 0);
+    glVertex3f(0, 0, ORT_LENGTH);
+    glVertex3f(0, 10, ORT_LENGTH - 10);
+    glVertex3f(0, 0, ORT_LENGTH);
+    glVertex3f(0, -10, ORT_LENGTH - 10);
+    glEnd();
+
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(0, -5,ORT_LENGTH + 30);
+    glVertex3f(0, 5,ORT_LENGTH + 30);
+    glVertex3f(0, -5,ORT_LENGTH + 20);
+    glVertex3f(0, 5,ORT_LENGTH + 20);
+    glEnd();
+
+}
+
 
 //void display(GLFWwindow *window, vector<float> first_params, vector<float> second_params) {
 void display(GLFWwindow *window) {
@@ -539,15 +613,22 @@ void display(GLFWwindow *window) {
         glRotatef(a, 1, 0, 0);
         glRotatef(b, 0, 1, 0);
         glRotatef(c, 0, 0, 1);
+
+        if (orts) {
+            render_x_ort();
+            render_y_ort();
+            render_z_ort();
+        }
+
 //
 //        glTranslatef(-x, -y, -z);
 
         if (!equal_surfaces) {
             glPushMatrix();
 
-            //make_intersect();
+            glEnd();
 
-            draw_intersect(intersect);
+            //make_intersect();
 
             glPushMatrix();
             float mulm[] = {1, 0, 0, 0,
@@ -565,6 +646,7 @@ void display(GLFWwindow *window) {
             glMultMatrixf(mulm);
 
 
+            draw_intersect(intersect);
             //glScaled(1, 5, 1);
 
             drawSurface(vertices_first, {0, 1, 0, 0.3}, 0);
@@ -677,6 +759,11 @@ int main(int argc, char **argv) {
             } else {
                 equals_temp = equals_temp && (equal(coef, first_coefs[i] / second_coefs[i]));
             }
+        } else if (is_zero(first_coefs[i]) && is_zero(second_coefs[i])) {
+            continue;
+        } else {
+            equals_temp = false;
+            break;
         }
     }
 
@@ -694,7 +781,7 @@ int main(int argc, char **argv) {
     second_surface = make_surface(*second_equation);
 
 
-    GLFWwindow *window = initWindow(800, 600);
+    GLFWwindow *window = initWindow(800, 700);
     if (nullptr != window) {
         display(window);
     }
