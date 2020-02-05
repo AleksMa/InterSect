@@ -21,11 +21,11 @@ vector<Point> Ellipsoid::make_vertices() {
     vertices.emplace_back(0.f, 0.f, C);
     for (int i = 1; i < 2 * N; i++) {
         for (int j = 0; j < M; j++) {
-            vertices.push_back(Point(
-                    A * sin((float) i * pi / N / 2) * cos((float) j * pi * 2 / M),
-                    B * sin((float) i * pi / N / 2) * sin((float) j * pi * 2 / M),
-                    C * cos((float) i * pi / N / 2)
-            ));
+            vertices.emplace_back(
+                    A * sin((float) i * M_PI / N / 2) * cos((float) j * M_PI * 2 / M),
+                    B * sin((float) i * M_PI / N / 2) * sin((float) j * M_PI * 2 / M),
+                    C * cos((float) i * M_PI / N / 2)
+            );
         }
     }
     vertices.emplace_back(0.f, 0.f, -C);

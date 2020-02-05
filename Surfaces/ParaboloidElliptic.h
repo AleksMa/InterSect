@@ -1,5 +1,5 @@
-#ifndef INTERSECT_PARABOLOID_H
-#define INTERSECT_PARABOLOID_H
+#ifndef INTERSECT_PARABOLOIDELLIPTIC_H
+#define INTERSECT_PARABOLOIDELLIPTIC_H
 
 #include <vector>
 #include "../Primary/Point.h"
@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Paraboloid : public AbstractSurface {
+class ParaboloidElliptic : public AbstractSurface {
 private:
     int N, M;
 
@@ -16,11 +16,11 @@ private:
     vector<Point> make_vertices();
 
 public:
-    Paraboloid(float a, float b);
+    ParaboloidElliptic(float a, float b);
 
     vector<Point> make_mash() override;
 
 };
 
 
-#endif //INTERSECT_PARABOLOID_H
+#endif //INTERSECT_PARABOLOIDELLIPTIC_H

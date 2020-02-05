@@ -272,7 +272,7 @@ QuadricEquation SurfaceEquation::canonizate() {
     }
 
     if (not_zero(temporary.XX()) && not_zero(temporary.YY()) && not_zero(temporary.Z())) {
-        // Paraboloid
+        // ParaboloidElliptic
         if (less_zero(temporary.XX()) && less_zero(temporary.YY())) {
             temporary.mul(-1);
         }

@@ -4,11 +4,12 @@
 #include "bits/stdc++.h"
 #include "Primary/Point.h"
 #include "Surfaces/Ellipsoid.h"
-#include "Surfaces/Paraboloid.h"
+#include "Surfaces/ParaboloidElliptic.h"
 #include "Evaluations/Equation.h"
 #include "Evaluations/EquationSystem.h"
 #include "Evaluations/Calculations.cpp"
 #include "SurfaceEquations/SurfaceEquation.h"
+#include "Surfaces/HyperboloidOneSheet.h"
 
 typedef tuple<float, float, float, float> tuple4f;
 typedef vector<Point> VP;
@@ -131,11 +132,39 @@ void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
 
 
     if (!hide) {
-        glBegin(type);
-        for (auto p : Vertices) {
-            glVertex3f(p.x + x, p.y + y + move, p.z + z + move);
+        if (type == GL_LINE_STRIP) {
+            for (int i = 0; i < Vertices.size() / 4; i++) {
+                glBegin(GL_LINE_LOOP);
+                for (int j = 0; j < 4; j++) {
+                    Point p = Vertices[4 * i + j];
+                    glVertex3f(p.x + x, p.y + y, p.z + z);
+                }
+                glEnd();
+            }
+        } else {
+//            for (int i = 0; i < Vertices.size() / 4; i++) {
+//                glBegin(GL_TRIANGLES);
+//                Point p0 = Vertices[4 * i];
+//                Point p1 = Vertices[4 * i + 1];
+//                Point p2 = Vertices[4 * i + 2];
+//                Point p3 = Vertices[4 * i + 3];
+//                glVertex3f(p0.x + x, p0.y + y, p0.z + z);
+//                glVertex3f(p1.x + x, p1.y + y, p1.z + z);
+//                glVertex3f(p2.x + x, p2.y + y, p2.z + z);
+//
+//
+//                glVertex3f(p0.x + x, p0.y + y, p0.z + z);
+//                glVertex3f(p2.x + x, p2.y + y, p2.z + z);
+//                glVertex3f(p3.x + x, p3.y + y, p3.z + z);
+//                glEnd();
+//            }
+
+            glBegin(GL_QUADS);
+            for (auto p : Vertices) {
+                glVertex3f(p.x + x, p.y + y, p.z + z);
+            }
+            glEnd();
         }
-        glEnd();
     }
 }
 
@@ -504,7 +533,7 @@ GLFWwindow *initWindow(const int resX, const int resY) {
 #define ORT_LENGTH 300
 #define ORT_WIDTH 3
 
-void render_x_ort(){
+void render_x_ort() {
     glColor4f(1, 0, 0, 1);
     glLineWidth(ORT_WIDTH);
     glBegin(GL_LINE_STRIP);
@@ -527,7 +556,7 @@ void render_x_ort(){
 }
 
 
-void render_y_ort(){
+void render_y_ort() {
     glColor4f(0, 1, 0, 1);
     glLineWidth(ORT_WIDTH);
     glBegin(GL_LINE_STRIP);
@@ -550,7 +579,7 @@ void render_y_ort(){
 }
 
 
-void render_z_ort(){
+void render_z_ort() {
     glColor4f(0, 0, 1, 1);
     glLineWidth(ORT_WIDTH);
     glBegin(GL_LINE_STRIP);
@@ -562,10 +591,10 @@ void render_z_ort(){
     glEnd();
 
     glBegin(GL_LINE_STRIP);
-    glVertex3f(0, -5,ORT_LENGTH + 30);
-    glVertex3f(0, 5,ORT_LENGTH + 30);
-    glVertex3f(0, -5,ORT_LENGTH + 20);
-    glVertex3f(0, 5,ORT_LENGTH + 20);
+    glVertex3f(0, -5, ORT_LENGTH + 30);
+    glVertex3f(0, 5, ORT_LENGTH + 30);
+    glVertex3f(0, -5, ORT_LENGTH + 20);
+    glVertex3f(0, 5, ORT_LENGTH + 20);
     glEnd();
 
 }
@@ -736,12 +765,12 @@ bool read_equations() {
 AbstractSurface *make_surface(SurfaceEquation &se) {
     if (se.get_type() == ELLIPSOID) {
         cout << "create Ellipsoid: " << endl;
-        return new Ellipsoid(sqrt(1 / se.get_canonical().XX()),
-                             sqrt(1 / se.get_canonical().YY()),
-                             sqrt(1 / se.get_canonical().ZZ()));
+        return new HyperboloidOneSheet(sqrt(1 / se.get_canonical().XX()),
+                                       sqrt(1 / se.get_canonical().YY()),
+                                       sqrt(1 / se.get_canonical().ZZ()));
     } else if (se.get_type() == PARABOLOID_ELLIPTIC) {
-        return new Paraboloid(sqrt(1 / se.get_canonical().XX()),
-                              sqrt(1 / se.get_canonical().YY()));
+        return new ParaboloidElliptic(sqrt(1 / se.get_canonical().XX()),
+                                      sqrt(1 / se.get_canonical().YY()));
     }
     return nullptr;
 }

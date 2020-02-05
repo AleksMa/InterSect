@@ -1,10 +1,10 @@
 #include <cmath>
 #include <iostream>
-#include "Paraboloid.h"
+#include "ParaboloidElliptic.h"
 
-Paraboloid::Paraboloid(float a, float b) : A(a), B(b) {}
+ParaboloidElliptic::ParaboloidElliptic(float a, float b) : A(a), B(b) {}
 
-vector<Point> Paraboloid::make_vertices() {
+vector<Point> ParaboloidElliptic::make_vertices() {
     N = 130 / 10 + 5;
     M = 20;
     vector<Point> vertices;
@@ -23,7 +23,7 @@ vector<Point> Paraboloid::make_vertices() {
     return vertices;
 }
 
-vector<Point> Paraboloid::make_mash() {
+vector<Point> ParaboloidElliptic::make_mash() {
     vector<Point> Vertices = this->make_vertices();
     vector<Point> finalVerticies;
     for (int i = 0; i < M; i++) {
