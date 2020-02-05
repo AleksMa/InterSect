@@ -268,6 +268,31 @@ QuadricEquation SurfaceEquation::canonizate() {
                 temporary.mul(-1 / temporary.D());
             }
             type = ELLIPSOID;
+        } else {
+            int k = 0;
+            if (greater_zero(temporary.XX()))
+                k++;
+            if (greater_zero(temporary.YY()))
+                k++;
+            if (greater_zero(temporary.ZZ()))
+                k++;
+            if (k == 1) {
+                temporary.mul(-1);
+                k = 2;
+            }
+            if (k == 2) {
+                if (less_zero(temporary.XX())) {
+                    swap(mul_finally[0], mul_finally[2]);
+                }
+                if (less_zero(temporary.YY())) {
+                    swap(mul_finally[1], mul_finally[2]);
+                }
+                if (greater_zero(temporary.D())) {
+                    type = HYPERBOLOID_TWO_SHEET;
+                } else if (less_zero(temporary.D())) {
+                    type = HYPERBOLOID_ONE_SHEET;
+                }
+            }
         }
     }
 

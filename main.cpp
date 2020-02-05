@@ -10,6 +10,7 @@
 #include "Evaluations/Calculations.cpp"
 #include "SurfaceEquations/SurfaceEquation.h"
 #include "Surfaces/HyperboloidOneSheet.h"
+#include "Surfaces/HyperboloidTwoSheet.h"
 
 typedef tuple<float, float, float, float> tuple4f;
 typedef vector<Point> VP;
@@ -177,8 +178,8 @@ vector<Point> make_intersect() {
 
     float intersect_epsilon = 1, edge_epsilon = 0.5;
 
-    float max_z = 101;
-    float min_z = -101;
+    float max_z = 300;
+    float min_z = -300;
 
 //    glColor3f(0, 0, 1);
 //    glBegin(GL_POINTS);
@@ -283,7 +284,7 @@ vector<Point> make_intersect() {
         }
     }
 
-    for (float i = sqrt(1 / first_quadric.ZZ()); i >= -sqrt(1 / first_quadric.ZZ()); i -= 1) {
+    for (float i = max_z; i >= min_z; i -= 1) {
         float rx = -first_quadric.D() - float(i * i) * first_quadric.ZZ() - i * first_quadric.Z();
         VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
 
@@ -764,13 +765,20 @@ bool read_equations() {
 
 AbstractSurface *make_surface(SurfaceEquation &se) {
     if (se.get_type() == ELLIPSOID) {
-        cout << "create Ellipsoid: " << endl;
-        return new HyperboloidOneSheet(sqrt(1 / se.get_canonical().XX()),
-                                       sqrt(1 / se.get_canonical().YY()),
-                                       sqrt(1 / se.get_canonical().ZZ()));
+        return new Ellipsoid(sqrt(1 / se.get_canonical().XX()),
+                             sqrt(1 / se.get_canonical().YY()),
+                             sqrt(1 / se.get_canonical().ZZ()));
     } else if (se.get_type() == PARABOLOID_ELLIPTIC) {
         return new ParaboloidElliptic(sqrt(1 / se.get_canonical().XX()),
                                       sqrt(1 / se.get_canonical().YY()));
+    } else if (se.get_type() == HYPERBOLOID_ONE_SHEET) {
+        return new HyperboloidOneSheet(sqrt(1 / se.get_canonical().XX()),
+                                       sqrt(1 / se.get_canonical().YY()),
+                                       sqrt(-1 / se.get_canonical().ZZ()));
+    } else if (se.get_type() == HYPERBOLOID_TWO_SHEET) {
+        return new HyperboloidTwoSheet(sqrt(1 / se.get_canonical().XX()),
+                                       sqrt(1 / se.get_canonical().YY()),
+                                       sqrt(-1 / se.get_canonical().ZZ()));
     }
     return nullptr;
 }

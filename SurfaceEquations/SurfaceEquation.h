@@ -13,6 +13,8 @@ enum surface_type {
     UNKNOWN,
     ELLIPSOID,
     PARABOLOID_ELLIPTIC,
+    HYPERBOLOID_ONE_SHEET,
+    HYPERBOLOID_TWO_SHEET,
 };
 
 class SurfaceEquation {
