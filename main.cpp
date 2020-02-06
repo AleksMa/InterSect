@@ -180,7 +180,7 @@ vector<Point> make_intersect() {
     vector<VF> mul_reversed = Matrix(first_equation->get_mul_matrix()).reverse();
     VF additional = first_equation->get_additional_vector();
 
-    float intersect_epsilon = 1, edge_epsilon = 0.5;
+    float intersect_epsilon = 2, edge_epsilon = 2;
 
     float max_z = 200;
     float min_z = -200;
@@ -188,7 +188,7 @@ vector<Point> make_intersect() {
 //    glColor3f(0, 0, 1);
 //    glBegin(GL_POINTS);
 //
-    for (float i = max_z; i >= max_z; i -= 0.1) {
+    for (float i = max_z; i >= min_z; i -= 0.1) {
 //        float rx = 1 - float(i * i) * (ellipsoid[2]);
         float rx = -first_quadric.D() - i * i * first_quadric.ZZ() - i * first_quadric.Z();
         VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
@@ -196,26 +196,26 @@ vector<Point> make_intersect() {
         for (float j = sqrt(1 / t[1]) + 1; j >= sqrt(1 / t[1]) - 1; j -= 0.01) {
             if (less_zero(float(j * j) * (t[1]) - 1) || is_zero(float(j * j) * (t[1]) - 1)) {
                 float ry = 1 - float(j * j) * t[1];
-                ry = (ry > 0 ? ry : 0);
                 float first_x = sqrt(ry) / sqrt(t[0]);
 
-                float y = j, z = i, x_less = -first_x, x_great = first_x;
-                bool correct = false, less_correct = false;
-                auto mul_matrix = first_equation->get_mul_matrix();
-                auto add_vector = first_equation->get_additional_vector();
+                float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
+                bool correct = false, correct_less = false;
 
-                auto result = EquationSystem({
-                                                     {mul_matrix[0][0], mul_matrix[0][1], mul_matrix[0][2],
-                                                                                                            -add_vector[0] +
-                                                                                                            first_x},
-                                                     {mul_matrix[1][0], mul_matrix[1][1], mul_matrix[1][2], -add_vector[1] +
-                                                                                                            first_x},
-                                                     {mul_matrix[2][0], mul_matrix[2][1], mul_matrix[2][2], -add_vector[2] +
-                                                                                                            first_x}
-                                             }).solve();
-                x_great = result[0];
-                y = result[1];
-                z = result[2];
+                x_great = mul_reversed[0][0] * (first_x) + additional[0]
+                          + mul_reversed[1][0] * (j)
+                          + mul_reversed[2][0] * (i);
+
+                y_great = mul_reversed[0][1] * (first_x)
+                          + mul_reversed[1][1] * (j) + additional[1]
+                          + mul_reversed[2][1] * (i);
+
+                z_great = mul_reversed[2][0] * (first_x)
+                          + mul_reversed[2][1] * (j)
+                          + mul_reversed[2][2] * (i) + additional[2];
+
+                float y = y_great;
+                float z = z_great;
+
 
                 VF eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
                                   y * z * second_quadric.YZ()
@@ -223,83 +223,44 @@ vector<Point> make_intersect() {
                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
                                   second_quadric.XX(), 0})
                         .solve();
+
                 for (float second_x : eq) {
                     if (equal_eps(second_x, x_great, intersect_epsilon))
                         correct = true;
-//                    if (equal_eps(second_x, -first_x, intersect_epsilon))
-//                        less_correct = true;
                 }
 
-//                if (!correct || !less_correct) {
-//                    z++;
-//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-//                                   y * z * second_quadric.YZ()
-//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-//                                   second_quadric.XX(), 0})
-//                            .solve();
-//                    for (float second_x : eq) {
-//                        if (equal_eps(second_x, first_x, edge_epsilon))
-//                            correct = true;
-//                        if (equal_eps(second_x, -first_x, edge_epsilon))
-//                            less_correct = true;
-//                    }
-//                }
-//
-//                if (!correct || !less_correct) {
-//                    z -= 2;
-//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-//                                   y * z * second_quadric.YZ()
-//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-//                                   second_quadric.XX(), 0})
-//                            .solve();
-//                    for (float second_x : eq) {
-//                        if (equal_eps(second_x, first_x, edge_epsilon))
-//                            correct = true;
-//                        if (equal_eps(second_x, -first_x, edge_epsilon))
-//                            less_correct = true;
-//                    }
-//                }
-//
-//                if (!correct || !less_correct) {
-//                    z++;
-//                    y++;
-//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-//                                   y * z * second_quadric.YZ()
-//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-//                                   second_quadric.XX(), 0})
-//                            .solve();
-//                    for (float second_x : eq) {
-//                        if (equal_eps(second_x, first_x, edge_epsilon))
-//                            correct = true;
-//                        if (equal_eps(second_x, -first_x, edge_epsilon))
-//                            less_correct = true;
-//                    }
-//                }
-//
-//                if (!correct || !less_correct) {
-//                    y -= 2;
-//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-//                                   y * z * second_quadric.YZ()
-//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-//                                   second_quadric.XX(), 0})
-//                            .solve();
-//                    for (float second_x : eq) {
-//                        if (equal_eps(second_x, first_x, edge_epsilon))
-//                            correct = true;
-//                        if (equal_eps(second_x, -first_x, edge_epsilon))
-//                            less_correct = true;
-//                    }
-//                }
+                x_less = mul_reversed[0][0] * (-first_x) + additional[0]
+                         + mul_reversed[1][0] * (j)
+                         + mul_reversed[2][0] * (i);
+
+                y_less = mul_reversed[0][1] * (-first_x)
+                         + mul_reversed[1][1] * (j) + additional[1]
+                         + mul_reversed[2][1] * (i);
+
+                z_less = mul_reversed[2][0] * (-first_x)
+                         + mul_reversed[2][1] * (j)
+                         + mul_reversed[2][2] * (i) + additional[2];
+
+                y = y_less;
+                z = z_less;
+
+                eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+                               y * z * second_quadric.YZ()
+                               + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+                               second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+                               second_quadric.XX(), 0})
+                        .solve();
+
+                for (float second_x : eq) {
+                    if (equal_eps(second_x, x_less, edge_epsilon))
+                        correct_less = true;
+                }
 
                 if (correct) {
-                    intersect.push_back(Point(first_x, j, i));
+                    intersect.emplace_back(first_x, j, i);
                 }
-                if (less_correct) {
-                    intersect.push_back(Point(-first_x, j, i));
+                if (correct_less) {
+                    intersect.emplace_back(-first_x, j, i);
                 }
             }
         }
@@ -394,33 +355,33 @@ vector<Point> make_intersect() {
         }
     }
 //
-    for (float i = max_z; i >= max_z; i -= 0.1) {
+    for (float i = max_z; i >= min_z; i -= 0.1) {
         float rx = -first_quadric.D() - i * i * first_quadric.ZZ() - i * first_quadric.Z();
         VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
 
         for (float j = -sqrt(1 / t[1]) + 1; j >= -sqrt(1 / t[1]) - 1; j -= 0.01) {
             if (1 >= float(j * j) * (t[1])) {
                 float ry = 1 - float(j * j) * t[1];
-                ry = (ry > 0 ? ry : 0);
                 float first_x = sqrt(ry) / sqrt(t[0]);
 
-                float y = j, z = i, x_less = -first_x, x_great = first_x;
-                bool correct = false, less_correct = false;
-                auto mul_matrix = first_equation->get_mul_matrix();
-                auto add_vector = first_equation->get_additional_vector();
+                float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
+                bool correct = false, correct_less = false;
 
-                auto result = EquationSystem({
-                                                     {mul_matrix[0][0], mul_matrix[0][1], mul_matrix[0][2],
-                                                                                                            -add_vector[0] +
-                                                                                                            first_x},
-                                                     {mul_matrix[1][0], mul_matrix[1][1], mul_matrix[1][2], -add_vector[1] +
-                                                                                                            first_x},
-                                                     {mul_matrix[2][0], mul_matrix[2][1], mul_matrix[2][2], -add_vector[2] +
-                                                                                                            first_x}
-                                             }).solve();
-                x_great = result[0];
-                y = result[1];
-                z = result[2];
+                x_great = mul_reversed[0][0] * (first_x) + additional[0]
+                          + mul_reversed[1][0] * (j)
+                          + mul_reversed[2][0] * (i);
+
+                y_great = mul_reversed[0][1] * (first_x)
+                          + mul_reversed[1][1] * (j) + additional[1]
+                          + mul_reversed[2][1] * (i);
+
+                z_great = mul_reversed[2][0] * (first_x)
+                          + mul_reversed[2][1] * (j)
+                          + mul_reversed[2][2] * (i) + additional[2];
+
+                float y = y_great;
+                float z = z_great;
+
 
                 VF eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
                                   y * z * second_quadric.YZ()
@@ -428,83 +389,44 @@ vector<Point> make_intersect() {
                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
                                   second_quadric.XX(), 0})
                         .solve();
+
                 for (float second_x : eq) {
                     if (equal_eps(second_x, x_great, intersect_epsilon))
                         correct = true;
-//                    if (equal_eps(second_x, -first_x, intersect_epsilon))
-//                        less_correct = true;
                 }
 
-//                if (!correct || !less_correct) {
-//                    z++;
-//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-//                                   y * z * second_quadric.YZ()
-//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-//                                   second_quadric.XX(), 0})
-//                            .solve();
-//                    for (float second_x : eq) {
-//                        if (equal_eps(second_x, first_x, edge_epsilon))
-//                            correct = true;
-//                        if (equal_eps(second_x, -first_x, edge_epsilon))
-//                            less_correct = true;
-//                    }
-//                }
-//
-//                if (!correct || !less_correct) {
-//                    z -= 2;
-//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-//                                   y * z * second_quadric.YZ()
-//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-//                                   second_quadric.XX(), 0})
-//                            .solve();
-//                    for (float second_x : eq) {
-//                        if (equal_eps(second_x, first_x, edge_epsilon))
-//                            correct = true;
-//                        if (equal_eps(second_x, -first_x, edge_epsilon))
-//                            less_correct = true;
-//                    }
-//                }
-//
-//                if (!correct || !less_correct) {
-//                    z++;
-//                    y++;
-//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-//                                   y * z * second_quadric.YZ()
-//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-//                                   second_quadric.XX(), 0})
-//                            .solve();
-//                    for (float second_x : eq) {
-//                        if (equal_eps(second_x, first_x, edge_epsilon))
-//                            correct = true;
-//                        if (equal_eps(second_x, -first_x, edge_epsilon))
-//                            less_correct = true;
-//                    }
-//                }
-//
-//                if (!correct || !less_correct) {
-//                    y -= 2;
-//                    eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-//                                   y * z * second_quadric.YZ()
-//                                   + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-//                                   second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-//                                   second_quadric.XX(), 0})
-//                            .solve();
-//                    for (float second_x : eq) {
-//                        if (equal_eps(second_x, first_x, edge_epsilon))
-//                            correct = true;
-//                        if (equal_eps(second_x, -first_x, edge_epsilon))
-//                            less_correct = true;
-//                    }
-//                }
+                x_less = mul_reversed[0][0] * (-first_x) + additional[0]
+                         + mul_reversed[1][0] * (j)
+                         + mul_reversed[2][0] * (i);
+
+                y_less = mul_reversed[0][1] * (-first_x)
+                         + mul_reversed[1][1] * (j) + additional[1]
+                         + mul_reversed[2][1] * (i);
+
+                z_less = mul_reversed[2][0] * (-first_x)
+                         + mul_reversed[2][1] * (j)
+                         + mul_reversed[2][2] * (i) + additional[2];
+
+                y = y_less;
+                z = z_less;
+
+                eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+                               y * z * second_quadric.YZ()
+                               + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+                               second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+                               second_quadric.XX(), 0})
+                        .solve();
+
+                for (float second_x : eq) {
+                    if (equal_eps(second_x, x_less, edge_epsilon))
+                        correct_less = true;
+                }
 
                 if (correct) {
-                    intersect.push_back(Point(first_x, j, i));
+                    intersect.emplace_back(first_x, j, i);
                 }
-                if (less_correct) {
-                    intersect.push_back(Point(-first_x, j, i));
+                if (correct_less) {
+                    intersect.emplace_back(-first_x, j, i);
                 }
             }
         }
