@@ -20,23 +20,23 @@ VF EquationSystem::solve() {
 
     VF ret;
 
-    print();
+    //print();
 
     lower_course();
-    print();
+    //print();
 
     if (is_homogen()) {
         int zerolines = zeroline_count();
         int count = 0;
         for (int i = 0; i < M - zerolines; i++) {
             if (is_zeroline(i)) {
-                cout << i << endl;
+                //cout << i << endl;
                 swap(equation_system[i], equation_system[M - zerolines + count]);
                 count++;
                 i--;
             }
         }
-        print();
+        //print();
 
         for (int i = M - 1 - zerolines; i > 0; --i) {
             for (int l = N - 1; l >= i; l--) {
@@ -49,9 +49,9 @@ VF EquationSystem::solve() {
                 }
             }
         }
-        print();
+        //print();
 
-        cout << zerolines << endl << endl;
+        //cout << zerolines << endl << endl;
         int non_zero = M - zerolines;
         for (int i = 0; i < non_zero; ++i) {
             equation_system[i][non_zero] *= -1;
@@ -59,7 +59,7 @@ VF EquationSystem::solve() {
                 equation_system[i][non_zero] -= equation_system[i][j];
             }
         }
-        print();
+        //print();
         for (int m = 0; m < non_zero; ++m) {
             ret.push_back(equation_system[m][non_zero]);
         }
@@ -68,17 +68,17 @@ VF EquationSystem::solve() {
         }
     } else {
         upper_course();
-        print();
+        //print();
         for (int m = 0; m < M; ++m) {
             ret.push_back(equation_system[m][N - 1]);
         }
     }
 
-    cout << "SOLVED: " << endl;
-    for (auto solved_value : ret) {
-        cout << solved_value << " ";
-    }
-    cout << endl << endl;
+//    cout << "SOLVED: " << endl;
+//    for (auto solved_value : ret) {
+//        cout << solved_value << " ";
+//    }
+//    cout << endl << endl;
 
     return ret;
 }
