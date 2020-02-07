@@ -281,15 +281,24 @@ QuadricEquation SurfaceEquation::canonizate() {
                 k = 2;
             }
             if (k == 2) {
+                // HYPERBOLOID
                 if (less_zero(temporary.XX())) {
                     swap(mul_finally[0], mul_finally[2]);
+                    swap(temporary.XX(), temporary.ZZ());
                 }
                 if (less_zero(temporary.YY())) {
                     swap(mul_finally[1], mul_finally[2]);
+                    swap(temporary.YY(), temporary.ZZ());
                 }
                 if (greater_zero(temporary.D())) {
+                    if (!equal(temporary.D(), 1.)) {
+                        temporary.mul(1 / temporary.D());
+                    }
                     type = HYPERBOLOID_TWO_SHEET;
                 } else if (less_zero(temporary.D())) {
+                    if (!equal(temporary.D(), -1.)) {
+                        temporary.mul(-1 / temporary.D());
+                    }
                     type = HYPERBOLOID_ONE_SHEET;
                 }
             }

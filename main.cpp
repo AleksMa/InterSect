@@ -81,37 +81,37 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
             c += 3.f;
         }
 
-        //////////////
-
-        if (key == GLFW_KEY_A) {
-            x -= 3.f;
-        }
-        if (key == GLFW_KEY_D) {
-            x += 3.f;
-        }
-
-        if (key == GLFW_KEY_S) {
-            y -= 3.f;
-        }
-        if (key == GLFW_KEY_W) {
-            y += 3.f;
-        }
-
-        if (key == GLFW_KEY_Z) {
-            z -= 3.f;
-        }
-        if (key == GLFW_KEY_Q) {
-            z += 3.f;
-        }
+//        //////////////
+//
+//        if (key == GLFW_KEY_A) {
+//            x -= 3.f;
+//        }
+//        if (key == GLFW_KEY_D) {
+//            x += 3.f;
+//        }
+//
+//        if (key == GLFW_KEY_S) {
+//            y -= 3.f;
+//        }
+//        if (key == GLFW_KEY_W) {
+//            y += 3.f;
+//        }
+//
+//        if (key == GLFW_KEY_Z) {
+//            z -= 3.f;
+//        }
+//        if (key == GLFW_KEY_Q) {
+//            z += 3.f;
+//        }
 
     }
 }
 
-//GLfloat project[] = {
-//        1.f, 0.f, 0.f, 0.5f,
-//        0.f, 1.f, 0.f, 0.f,
-//        0.f, 0.f, 1.f, 0.5f,
-//        0.f, 0.f, 0.f, 1.f };
+GLfloat project[] = {
+        1.f, 0.f, 0.f, 0.5f,
+        0.f, 1.f, 0.f, 0.f,
+        0.f, 0.f, 1.f, 0.5f,
+        0.f, 0.f, 0.f, 1.f };
 
 void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
 
@@ -180,10 +180,12 @@ vector<Point> make_intersect() {
     vector<VF> mul_reversed = Matrix(first_equation->get_mul_matrix()).reverse();
     VF additional = first_equation->get_additional_vector();
 
-    float intersect_epsilon = 2, edge_epsilon = 2;
+    float intersect_epsilon = 1, edge_epsilon = 2;
 
-    float max_z = 200;
-    float min_z = -200;
+    float max_z = 300;
+    float min_z = -300;
+
+    bool test = false;
 
 //    glColor3f(0, 0, 1);
 //    glBegin(GL_POINTS);
@@ -197,6 +199,12 @@ vector<Point> make_intersect() {
             if (less_zero(float(j * j) * (t[1]) - 1) || is_zero(float(j * j) * (t[1]) - 1)) {
                 float ry = 1 - float(j * j) * t[1];
                 float first_x = sqrt(ry) / sqrt(t[0]);
+
+                if (test) {
+                    intersect.emplace_back(first_x, j, i);
+                    intersect.emplace_back(-first_x, j, i);
+                    continue;
+                }
 
                 float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
                 bool correct = false, correct_less = false;
@@ -278,14 +286,20 @@ vector<Point> make_intersect() {
         cout << endl;
     }
 
-    for (float i = max_z; i >= min_z; i -= 1) {
+    for (int i = max_z; i >= min_z; i -= 1) {
         float rx = -first_quadric.D() - float(i * i) * first_quadric.ZZ() - i * first_quadric.Z();
         VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
 
-        for (float j = max_z; j >= min_z; j -= 0.1) {
+        for (float j = 200; j >= -200; j -= 0.1) {
             if (1 >= float(j * j) * (t[1])) {
                 float ry = 1 - float(j * j) * t[1];
                 float first_x = sqrt(ry) / sqrt(t[0]);
+
+                if (test) {
+                    intersect.emplace_back(first_x, j, i);
+                    intersect.emplace_back(-first_x, j, i);
+                    continue;
+                }
 
                 float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
                 bool correct = false, correct_less = false;
@@ -334,10 +348,10 @@ vector<Point> make_intersect() {
                 z = z_less;
 
                 eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                  y * z * second_quadric.YZ()
-                                  + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                  second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                  second_quadric.XX(), 0})
+                               y * z * second_quadric.YZ()
+                               + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+                               second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+                               second_quadric.XX(), 0})
                         .solve();
 
                 for (float second_x : eq) {
@@ -363,6 +377,12 @@ vector<Point> make_intersect() {
             if (1 >= float(j * j) * (t[1])) {
                 float ry = 1 - float(j * j) * t[1];
                 float first_x = sqrt(ry) / sqrt(t[0]);
+
+                if (test) {
+                    intersect.emplace_back(first_x, j, i);
+                    intersect.emplace_back(-first_x, j, i);
+                    continue;
+                }
 
                 float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
                 bool correct = false, correct_less = false;
@@ -687,7 +707,7 @@ vector<string> split(const string &s) {
         i = find_if(i, s.end(), notspace);
         iter j = find_if(i, s.end(), space);
         if (i != s.end()) {
-            ret.push_back(string(i, j));
+            ret.emplace_back(i, j);
             i = j;
         }
     }
