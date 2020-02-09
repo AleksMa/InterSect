@@ -306,24 +306,35 @@ QuadricEquation SurfaceEquation::canonizate() {
     }
 
     if (not_zero(temporary.XX()) && not_zero(temporary.YY()) && not_zero(temporary.Z())) {
-        // ParaboloidElliptic
-        if (less_zero(temporary.XX()) && less_zero(temporary.YY())) {
-            temporary.mul(-1);
+        // Paraboloid
+        if (!equal(1, abs(temporary.Z()))) {
+            temporary.mul(1 / temporary.Z());
         }
 
-        if (greater_zero(temporary.XX()) && greater_zero(temporary.YY())) {
+        if ((greater_zero(temporary.XX()) && greater_zero(temporary.YY())) ||
+            (less_zero(temporary.XX()) && less_zero(temporary.YY()))) {
+            // Paraboloid Elliptic
+            if (less_zero(temporary.XX()) && less_zero(temporary.YY())) {
+                temporary.mul(-1);
+            }
+
             if (less_zero(temporary.Z())) {
                 type = PARABOLOID_ELLIPTIC;
             } else {
                 temporary.Z() *= -1;
-                mul_finally[2][2] = -1;
+                mul_finally[0][2] *= -1;
+                mul_finally[1][2] *= -1;
+                mul_finally[2][2] *= -1;
                 type = PARABOLOID_ELLIPTIC;
             }
+        } else {
+
         }
     }
 
 
     temporary.print();
+
     cout << endl;
 
 

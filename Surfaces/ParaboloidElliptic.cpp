@@ -49,7 +49,7 @@ vector<Point> ParaboloidElliptic::make_mash() {
         }
     }
 
-//    for (int j = 0; j < finalVerticies.size(); ++j) {
+//    for (int j = 0; j < finalVerticies.size_x(); ++j) {
 //        cout << finalVerticies[j].x << " " << finalVerticies[j].y << " " << finalVerticies[j].z << std::endl;
 //    }
 

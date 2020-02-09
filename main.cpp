@@ -12,6 +12,7 @@
 #include "Surfaces/HyperboloidOneSheet.h"
 #include "Surfaces/HyperboloidTwoSheet.h"
 #include "Evaluations/Matrix.h"
+#include "Surfaces/ParaboloidHyperbolic.h"
 
 typedef tuple<float, float, float, float> tuple4f;
 typedef vector<Point> VP;
@@ -111,7 +112,7 @@ GLfloat project[] = {
         1.f, 0.f, 0.f, 0.5f,
         0.f, 1.f, 0.f, 0.f,
         0.f, 0.f, 1.f, 0.5f,
-        0.f, 0.f, 0.f, 1.f };
+        0.f, 0.f, 0.f, 1.f};
 
 void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
 
@@ -144,7 +145,7 @@ void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
                 glEnd();
             }
         } else {
-//            for (int i = 0; i < Vertices.size() / 4; i++) {
+//            for (int i = 0; i < Vertices.size_x() / 4; i++) {
 //                glBegin(GL_TRIANGLES);
 //                Point p0 = Vertices[4 * i];
 //                Point p1 = Vertices[4 * i + 1];
@@ -741,8 +742,8 @@ AbstractSurface *make_surface(SurfaceEquation &se) {
                              sqrt(1 / se.get_canonical().YY()),
                              sqrt(1 / se.get_canonical().ZZ()));
     } else if (se.get_type() == PARABOLOID_ELLIPTIC) {
-        return new ParaboloidElliptic(sqrt(1 / se.get_canonical().XX()),
-                                      sqrt(1 / se.get_canonical().YY()));
+        return new ParaboloidHyperbolic(sqrt(1 / se.get_canonical().XX()),
+                                        sqrt(1 / se.get_canonical().YY()));
     } else if (se.get_type() == HYPERBOLOID_ONE_SHEET) {
         return new HyperboloidOneSheet(sqrt(1 / se.get_canonical().XX()),
                                        sqrt(1 / se.get_canonical().YY()),
