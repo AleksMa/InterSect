@@ -60,5 +60,13 @@ vector<Point> ParaboloidElliptic::make_mash() {
     return finalVerticies;
 }
 
+float ParaboloidElliptic::max_z() {
+    return pow(N - 1, 2);
+}
+
+float ParaboloidElliptic::min_z() {
+    return 0;
+}
+
 
 

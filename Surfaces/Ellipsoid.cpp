@@ -79,5 +79,13 @@ vector<Point> Ellipsoid::make_mash() {
     return finalVerticies;
 }
 
+float Ellipsoid::max_z() {
+    return C;
+}
+
+float Ellipsoid::min_z() {
+    return -C;
+}
+
 
 

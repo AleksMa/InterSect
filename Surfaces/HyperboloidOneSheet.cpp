@@ -46,3 +46,11 @@ vector<Point> HyperboloidOneSheet::make_mash() {
     }
     return final_vertices;
 }
+
+float HyperboloidOneSheet::max_z() {
+    return size;
+}
+
+float HyperboloidOneSheet::min_z() {
+    return -size + N;
+}

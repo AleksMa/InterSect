@@ -14,12 +14,17 @@ private:
 
     float A, B;
 
+    float max, min;
+
     vector<Point> make_vertices();
 
 public:
     ParaboloidHyperbolic(float a, float b);
 
     vector<Point> make_mash() override;
+
+    float max_z() override;
+    float min_z() override;
 };
 
 

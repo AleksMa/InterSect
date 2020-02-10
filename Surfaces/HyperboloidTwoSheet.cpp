@@ -102,3 +102,11 @@ vector<Point> HyperboloidTwoSheet::make_mash() {
 
     return final_vertices;
 }
+
+float HyperboloidTwoSheet::max_z() {
+    return size;
+}
+
+float HyperboloidTwoSheet::min_z() {
+    return -size;
+}

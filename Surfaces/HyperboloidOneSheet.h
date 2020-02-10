@@ -20,6 +20,9 @@ public:
     HyperboloidOneSheet(float a, float b, float c);
 
     vector<Point> make_mash() override;
+
+    float max_z() override;
+    float min_z() override;
 };
 
 
