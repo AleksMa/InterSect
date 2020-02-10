@@ -26,6 +26,8 @@ GLfloat a = -90.f, b = 0.f, c = -90.f;
 //GLfloat a = 0.f, b = 0.f, c = 0.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
 
+float alpha = a, betta = b, gama = c;
+
 bool transp = false;
 bool hide = false;
 bool typefl = true;
@@ -181,10 +183,15 @@ vector<Point> make_intersect() {
     vector<VF> mul_reversed = Matrix(first_equation->get_mul_matrix()).reverse();
     VF additional = first_equation->get_additional_vector();
 
-    float intersect_epsilon = 1, edge_epsilon = 2;
+    float intersect_epsilon = 2, edge_epsilon = 2;
 
-    float max_z = 300;
-    float min_z = -300;
+    float max_z = 200;
+    float min_z = -200;
+
+    if (first_equation->get_type() == ELLIPSOID) {
+        max_z = 1 / sqrt(first_quadric.ZZ());
+        min_z = -max_z;
+    }
 
     bool test = false;
 
@@ -287,7 +294,7 @@ vector<Point> make_intersect() {
         cout << endl;
     }
 
-    for (int i = max_z; i >= min_z; i -= 1) {
+    for (float i = max_z; i >= min_z; i -= 0.5) {
         float rx = -first_quadric.D() - float(i * i) * first_quadric.ZZ() - i * first_quadric.Z();
         VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
 
@@ -612,10 +619,13 @@ void display(GLFWwindow *window) {
         //drawCube(window);
 
 //        glTranslatef(x, y, z);
-//
+
+
         glRotatef(a, 1, 0, 0);
         glRotatef(b, 0, 1, 0);
         glRotatef(c, 0, 0, 1);
+
+
 
         if (orts) {
             render_x_ort();
@@ -742,8 +752,11 @@ AbstractSurface *make_surface(SurfaceEquation &se) {
                              sqrt(1 / se.get_canonical().YY()),
                              sqrt(1 / se.get_canonical().ZZ()));
     } else if (se.get_type() == PARABOLOID_ELLIPTIC) {
+        return new ParaboloidElliptic(sqrt(1 / se.get_canonical().XX()),
+                                      sqrt(1 / se.get_canonical().YY()));
+    } else if (se.get_type() == PARABOLOID_HYPERBOLIC) {
         return new ParaboloidHyperbolic(sqrt(1 / se.get_canonical().XX()),
-                                        sqrt(1 / se.get_canonical().YY()));
+                                        sqrt(-1 / se.get_canonical().YY()));
     } else if (se.get_type() == HYPERBOLOID_ONE_SHEET) {
         return new HyperboloidOneSheet(sqrt(1 / se.get_canonical().XX()),
                                        sqrt(1 / se.get_canonical().YY()),

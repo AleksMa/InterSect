@@ -26,7 +26,7 @@ vector<Point> ParaboloidHyperbolic::make_vertices() {
         N += 3;
         K++;
         vertices.emplace_back(-size_x,
-                              sqrt(left - j) / B,
+                              sqrt(left - j) * B,
                               j
         );
 //        vertices.emplace_back(size_x,
@@ -47,7 +47,7 @@ vector<Point> ParaboloidHyperbolic::make_vertices() {
             N += 3;
             k++;
             vertices.emplace_back(i,
-                                  sqrt(left - (float) j) / B,
+                                  sqrt(left - (float) j) * B,
                                   j
             );
 //            vertices.emplace_back(i,

@@ -328,7 +328,19 @@ QuadricEquation SurfaceEquation::canonizate() {
                 type = PARABOLOID_ELLIPTIC;
             }
         } else {
+            if (less_zero(temporary.XX())) {
+                temporary.mul(-1);
+            }
 
+            if (less_zero(temporary.Z())) {
+                type = PARABOLOID_HYPERBOLIC;
+            } else {
+                temporary.Z() *= -1;
+                mul_finally[0][2] *= -1;
+                mul_finally[1][2] *= -1;
+                mul_finally[2][2] *= -1;
+                type = PARABOLOID_HYPERBOLIC;
+            }
         }
     }
 
