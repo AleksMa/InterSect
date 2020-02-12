@@ -1,7 +1,3 @@
-//
-// Created by alexey on 06.02.2020.
-//
-
 #ifndef INTERSECT_MATRIX_H
 #define INTERSECT_MATRIX_H
 

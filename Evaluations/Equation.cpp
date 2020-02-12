@@ -1,7 +1,3 @@
-//
-// Created by alexey on 29.01.2020.
-//
-
 #ifndef INTERSECT_EQUATION_CPP
 #define INTERSECT_EQUATION_CPP
 
@@ -26,7 +22,6 @@ Equation::Equation(vector<float> coef) : equation(std::move(coef)) {
         }
         equation[3] = 1.f;
     }
-    //cout << equation[3] << "X^3 + " << equation[2] << "X^2 + " << equation[1] << "X + " << equation[0] << endl << endl;
 }
 
 vector<float> Equation::solve() {
@@ -107,6 +102,5 @@ int Equation::solve_cube_helper(float *x) {
         return 1;
     }
 }
-
 
 #endif

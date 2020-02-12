@@ -1,7 +1,3 @@
-//
-// Created by alexey on 18.12.2019.
-//
-
 #include <cmath>
 #include <iostream>
 #include "Ellipsoid.h"
@@ -67,11 +63,6 @@ vector<Point> Ellipsoid::make_mash() {
         finalVerticies.push_back(p1);
         finalVerticies.push_back(p2);
     }
-
-//    for (int j = 0; j < finalVerticies.size_x(); ++j) {
-//        cout << finalVerticies[j].x << " " << finalVerticies[j].y << " " << finalVerticies[j].z << std::endl;
-//    }
-
 
     if (this->B == 0) {
         return vector<Point>{finalVerticies[0]};

@@ -1,7 +1,3 @@
-//
-// Created by alexey on 30.01.2020.
-//
-
 #include <iostream>
 #include "SurfaceEquation.h"
 #include "../Evaluations/Equation.h"

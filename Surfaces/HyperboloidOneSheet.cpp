@@ -1,7 +1,3 @@
-//
-// Created by alexey on 05.02.2020.
-//
-
 #include <math.h>
 #include <iostream>
 #include "HyperboloidOneSheet.h"

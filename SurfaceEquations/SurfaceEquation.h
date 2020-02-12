@@ -1,7 +1,3 @@
-//
-// Created by alexey on 30.01.2020.
-//
-
 #ifndef INTERSECT_SURFACEEQUATION_H
 #define INTERSECT_SURFACEEQUATION_H
 

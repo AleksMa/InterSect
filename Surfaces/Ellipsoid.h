@@ -1,7 +1,3 @@
-//
-// Created by alexey on 18.12.2019.
-//
-
 #ifndef INTERSECT_ELLIPSOID_H
 #define INTERSECT_ELLIPSOID_H
 

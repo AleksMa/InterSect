@@ -1,7 +1,3 @@
-//
-// Created by alexey on 29.01.2020.
-//
-
 #ifndef INTERSECT_EQUATION_H
 #define INTERSECT_EQUATION_H
 

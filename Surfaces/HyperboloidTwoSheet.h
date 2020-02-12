@@ -1,7 +1,3 @@
-//
-// Created by alexey on 05.02.2020.
-//
-
 #ifndef INTERSECT_HYPERBOLOIDTWOSHEET_H
 #define INTERSECT_HYPERBOLOIDTWOSHEET_H
 

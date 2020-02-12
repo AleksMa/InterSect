@@ -1,7 +1,3 @@
-//
-// Created by alexey on 03.02.2020.
-//
-
 #ifndef INTERSECT_ABSTRACTSURFACE_H
 #define INTERSECT_ABSTRACTSURFACE_H
 

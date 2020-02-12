@@ -1,7 +1,3 @@
-//
-// Created by alexey on 09.02.2020.
-//
-
 #ifndef INTERSECT_PARABOLOIDHYPERBOLIC_H
 #define INTERSECT_PARABOLOIDHYPERBOLIC_H
 

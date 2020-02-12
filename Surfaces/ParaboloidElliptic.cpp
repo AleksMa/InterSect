@@ -1,5 +1,4 @@
 #include <cmath>
-#include <iostream>
 #include "ParaboloidElliptic.h"
 
 ParaboloidElliptic::ParaboloidElliptic(float a, float b) : A(a), B(b) {}

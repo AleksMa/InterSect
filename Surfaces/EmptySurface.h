@@ -1,7 +1,3 @@
-//
-// Created by alexey on 12.02.2020.
-//
-
 #ifndef INTERSECT_EMPTYSURFACE_H
 #define INTERSECT_EMPTYSURFACE_H
 

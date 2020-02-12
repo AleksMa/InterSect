@@ -1,7 +1,3 @@
-//
-// Created by alexey on 06.02.2020.
-//
-
 #include "Matrix.h"
 
 #include <utility>
@@ -18,7 +14,6 @@ vector<vector<float>> Matrix::reverse() {
     int i, j, k, leader_pos;
     float leader, temp;
     for (i = 0; i < dim; i++) {
-//вычисляем ведущий элемент
         leader = A[i][i];
         leader_pos = i;
         for (j = i; j < dim; j++)
@@ -27,7 +22,6 @@ vector<vector<float>> Matrix::reverse() {
                 leader_pos = j;
             }
         if (fabs(leader) > eps) {
-//меняем местами текущую строку со строкой с новым ведущим элементом
             for (j = 0; j < dim; j++) {
                 temp = A[i][j];
                 A[i][j] = A[leader_pos][j];
@@ -37,7 +31,6 @@ vector<vector<float>> Matrix::reverse() {
                 A_[i][j] = A_[leader_pos][j];
                 A_[leader_pos][j] = temp;
             }
-//изменяем строки, ведущий элемент - A[i][i]
             for (j = 0; j < dim; j++) {
                 if (i != j) {
                     temp = (A[j][i] / A[i][i]);

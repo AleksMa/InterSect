@@ -1,7 +1,3 @@
-//
-// Created by alexey on 09.02.2020.
-//
-
 #include "ParaboloidHyperbolic.h"
 
 #include <cmath>
@@ -30,10 +26,6 @@ vector<Point> ParaboloidHyperbolic::make_vertices() {
                               sqrt(left - j) * B,
                               j
         );
-//        vertices.emplace_back(size_x,
-//                              -sqrt(left - j) / B,
-//                              j
-//        );
     }
     for (int i = -size_x + M; i <= size_x; i += M) {    // x
         N = 1;

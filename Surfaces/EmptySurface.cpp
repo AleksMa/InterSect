@@ -1,7 +1,3 @@
-//
-// Created by alexey on 12.02.2020.
-//
-
 #include "EmptySurface.h"
 
 vector<Point> EmptySurface::make_mash() {

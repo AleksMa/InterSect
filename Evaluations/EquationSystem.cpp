@@ -1,7 +1,3 @@
-//
-// Created by alexey on 31.01.2020.
-//
-
 #include <iostream>
 #include "EquationSystem.h"
 #include "Calculations.cpp"
@@ -30,7 +26,6 @@ VF EquationSystem::solve() {
         int count = 0;
         for (int i = 0; i < M - zerolines; i++) {
             if (is_zeroline(i)) {
-                //cout << i << endl;
                 swap(equation_system[i], equation_system[M - zerolines + count]);
                 count++;
                 i--;

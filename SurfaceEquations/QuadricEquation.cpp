@@ -1,7 +1,3 @@
-//
-// Created by alexey on 30.01.2020.
-//
-
 #include "QuadricEquation.h"
 
 #include <utility>
