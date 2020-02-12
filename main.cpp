@@ -15,20 +15,22 @@
 #include "Surfaces/ParaboloidHyperbolic.h"
 #include "Surfaces/EmptySurface.h"
 
+#define ORT_LENGTH 300
+#define ORT_WIDTH 3
+
 typedef tuple<float, float, float, float> tuple4f;
 typedef vector<Point> VP;
 typedef vector<float> VF;
 
-bool equal_surfaces = false;
-
 using namespace std;
+
+
 
 GLfloat a = -90.f, b = 0.f, c = -90.f;
 //GLfloat a = 0.f, b = 0.f, c = 0.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
 
-float alpha = a, betta = b, gama = c;
-
+bool equal_surfaces = false;
 bool transp = false;
 bool hide = false;
 bool typefl = true;
@@ -36,9 +38,9 @@ bool orts = true;
 
 vector<float> first_coefs, second_coefs;
 
-SurfaceEquation *first_equation, *second_equation;
+shared_ptr<SurfaceEquation> first_equation, second_equation;
 
-AbstractSurface *first_surface, *second_surface;
+shared_ptr<AbstractSurface> first_surface, second_surface;
 
 
 
@@ -90,38 +92,8 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
         if (key == GLFW_KEY_LEFT) {
             c += 3.f;
         }
-
-//        //////////////
-//
-//        if (key == GLFW_KEY_A) {
-//            x -= 3.f;
-//        }
-//        if (key == GLFW_KEY_D) {
-//            x += 3.f;
-//        }
-//
-//        if (key == GLFW_KEY_S) {
-//            y -= 3.f;
-//        }
-//        if (key == GLFW_KEY_W) {
-//            y += 3.f;
-//        }
-//
-//        if (key == GLFW_KEY_Z) {
-//            z -= 3.f;
-//        }
-//        if (key == GLFW_KEY_Q) {
-//            z += 3.f;
-//        }
-
     }
 }
-
-GLfloat project[] = {
-        1.f, 0.f, 0.f, 0.5f,
-        0.f, 1.f, 0.f, 0.f,
-        0.f, 0.f, 1.f, 0.5f,
-        0.f, 0.f, 0.f, 1.f};
 
 void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
 
@@ -154,23 +126,6 @@ void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
                 glEnd();
             }
         } else {
-//            for (int i = 0; i < Vertices.size_x() / 4; i++) {
-//                glBegin(GL_TRIANGLES);
-//                Point p0 = Vertices[4 * i];
-//                Point p1 = Vertices[4 * i + 1];
-//                Point p2 = Vertices[4 * i + 2];
-//                Point p3 = Vertices[4 * i + 3];
-//                glVertex3f(p0.x + x, p0.y + y, p0.z + z);
-//                glVertex3f(p1.x + x, p1.y + y, p1.z + z);
-//                glVertex3f(p2.x + x, p2.y + y, p2.z + z);
-//
-//
-//                glVertex3f(p0.x + x, p0.y + y, p0.z + z);
-//                glVertex3f(p2.x + x, p2.y + y, p2.z + z);
-//                glVertex3f(p3.x + x, p3.y + y, p3.z + z);
-//                glEnd();
-//            }
-
             glBegin(GL_QUADS);
             for (auto p : Vertices) {
                 glVertex3f(p.x + x, p.y + y, p.z + z);
@@ -674,9 +629,6 @@ GLFWwindow *initWindow(const int resX, const int resY) {
     return window;
 }
 
-#define ORT_LENGTH 300
-#define ORT_WIDTH 3
-
 void render_x_ort() {
     glColor4f(1, 0, 0, 1);
     glLineWidth(ORT_WIDTH);
@@ -747,41 +699,29 @@ void render_z_ort() {
 //void display(GLFWwindow *window, vector<float> first_params, vector<float> second_params) {
 void display(GLFWwindow *window) {
 
-    vector<Point> vertices_first = first_surface->make_mash();
+    vector<Point> vertices_first, vertices_second, intersect;
 
-    vector<Point> vertices_second = second_surface->make_mash();
+    vertices_second = second_surface->make_mash();
 
-    vector<Point> intersect = create_intersect();
-
-//    vector<Point> vertices_first = makeEllipsoid(100, 150, 100);
-//    vector<Point> vertices_second = makeParaboloid(10, 10);
-
-//    glRotatef(-90.f, 1, 0, 0);
-//    glRotatef(90.f, 0, 0, 1);
+    if(!equal_surfaces){
+        vertices_first = first_surface->make_mash();
+        intersect = create_intersect();
+    }
 
     while (!glfwWindowShouldClose(window)) {
         GLint windowWidth, windowHeight;
         glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
         glViewport(0, 0, windowWidth, windowHeight);
 
-        //glClearColor(0.8, 0.8, 0.8, 1.0);
         glClearColor(1, 1, 1, 1.);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //glMatrixMode(GL_PROJECTION);
-
         glLoadIdentity();
-
-        //glMultMatrixf(project);
 
         glOrtho(-windowWidth / 2, windowWidth / 2, -windowHeight / 2,
                 windowHeight / 2, -(windowWidth + windowHeight) / 4, (windowWidth + windowHeight) / 4);
 
         glMatrixMode(GL_MODELVIEW_MATRIX);
-
-        //drawCube(window);
-
-//        glTranslatef(x, y, z);
 
 
         glRotatef(a, 1, 0, 0);
@@ -795,15 +735,10 @@ void display(GLFWwindow *window) {
             render_z_ort();
         }
 
-//
-//        glTranslatef(-x, -y, -z);
-
         if (!equal_surfaces) {
             glPushMatrix();
 
             glEnd();
-
-            //make_intersect();
 
             glPushMatrix();
             float mulm[] = {1, 0, 0, 0,
@@ -820,9 +755,7 @@ void display(GLFWwindow *window) {
 
             glMultMatrixf(mulm);
 
-
             draw_intersect(intersect);
-            //glScaled(1, 5, 1);
 
             drawSurface(vertices_first, {0, 1, 0, 0.3}, 0);
 
@@ -841,7 +774,7 @@ void display(GLFWwindow *window) {
         }
         glMultMatrixf(mulm2);
 
-        tuple4f second_color = (equal_surfaces ? tuple4f{0, 0, 1, 1} : tuple4f{1, 0, 0, 0.3});
+        tuple4f second_color = (equal_surfaces ? tuple4f{0, 0, 1, 0.3} : tuple4f{1, 0, 0, 0.3});
 
         drawSurface(vertices_second, second_color, 0);
 
@@ -931,10 +864,7 @@ AbstractSurface *make_surface(SurfaceEquation &se) {
     return new EmptySurface();
 }
 
-int main(int argc, char **argv) {
-
-    read_equations();
-
+bool check_equal(){
     float coef = 0;
     bool equals_temp = true;
     for (int i = 0; i < 10; ++i) {
@@ -952,18 +882,25 @@ int main(int argc, char **argv) {
         }
     }
 
-    equal_surfaces = equals_temp;
+    return equals_temp;
+}
 
-    first_equation = new SurfaceEquation(first_coefs);
-    second_equation = new SurfaceEquation(second_coefs);
+int main(int argc, char **argv) {
+
+    read_equations();
+
+    equal_surfaces = check_equal();
+
+    first_equation = shared_ptr<SurfaceEquation>(new SurfaceEquation(first_coefs));
+    second_equation = shared_ptr<SurfaceEquation>(new SurfaceEquation(second_coefs));
 
     first_equation->canonizate();
     cout << "FIRST TYPE: " << first_equation->get_type() << endl;
-    first_surface = make_surface(*first_equation);
+    first_surface = shared_ptr<AbstractSurface>(make_surface(*first_equation));
 
     second_equation->canonizate();
     cout << "SECOND TYPE: " << second_equation->get_type() << endl;
-    second_surface = make_surface(*second_equation);
+    second_surface = shared_ptr<AbstractSurface>(make_surface(*second_equation));
 
 
     GLFWwindow *window = initWindow(800, 700);
@@ -973,41 +910,5 @@ int main(int argc, char **argv) {
     glfwDestroyWindow(window);
     glfwTerminate();
 
-    delete first_surface;
-    delete second_surface;
-
-    delete first_equation;
-    delete second_equation;
-
     return 0;
-
-
-
-//    SurfaceEquation as(VF{1, 1, 0, 0, 0, 0, 2, -4, 2, 1});
-//// quite OK
-//
-////    SurfaceEquation as(VF{1, 0, 0, 0, 0, 0, 0, 6, -8, 10});
-//// quite OK
-//
-////    SurfaceEquation as(VF{3, -7, 3, 8, -8, -8, 10, -14, -6, -8});
-//
-//    as.canonizate();
-//
-//    cout << as.get_type() << endl;
-
 }
-
-//EquationSystem eq({
-////                              {2, 2, -1, 0},
-////                              {5, 4, -6, 0},
-////                              {3, 2, -5, 0},
-//                              { 1, 1, 1, 0 },
-//                              { 1, 1, 1, 0 },
-//                              { 1, 1, 1, 0 }
-//                      });
-//
-//    auto v = eq.solve();
-//
-//    for (auto el : v) {
-//        cout << el << endl;
-//    }
