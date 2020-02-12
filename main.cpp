@@ -6,7 +6,6 @@
 #include "Surfaces/Ellipsoid.h"
 #include "Surfaces/ParaboloidElliptic.h"
 #include "Evaluations/Equation.h"
-#include "Evaluations/EquationSystem.h"
 #include "Evaluations/Calculations.cpp"
 #include "SurfaceEquations/SurfaceEquation.h"
 #include "Surfaces/HyperboloidOneSheet.h"
@@ -14,7 +13,11 @@
 #include "Evaluations/Matrix.h"
 #include "Surfaces/ParaboloidHyperbolic.h"
 #include "Surfaces/EmptySurface.h"
+#include "InterSect/InterSect.h"
 
+
+#define RESX 800
+#define RESY 700
 #define ORT_LENGTH 300
 #define ORT_WIDTH 3
 
@@ -135,458 +138,11 @@ void drawSurface(const vector<Point> &Vertices, tuple4f color, float move) {
     }
 }
 
-vector<Point> make_intersect();
-
-vector<Point> make_ph_intersect();
-
-vector<Point> create_intersect() {
-    if (first_equation->get_type() == PARABOLOID_HYPERBOLIC) {
-        return make_ph_intersect();
-    } else if (first_equation->get_type() != UNKNOWN) {
-        return make_intersect();
-    }
-    return VP();
-}
-
-vector<Point> make_intersect() {
-
-    vector<Point> intersect;
-
-    auto first_quadric = first_equation->get_canonical();
-    auto second_quadric = second_equation->get_equation();
-
-    vector<VF> mul_reversed = Matrix(first_equation->get_mul_matrix()).reverse();
-    VF additional = first_equation->get_additional_vector();
-
-    float intersect_epsilon = 1, edge_epsilon = 2.5;
-
-    float max_z = first_surface->max_z();
-    float min_z = first_surface->min_z();
-
-//    if (first_equation->get_type() == ELLIPSOID) {
-//        max_z = 1 / sqrt(first_quadric.ZZ());
-//        min_z = -max_z;
-//    }
-
-    bool test = false;
-
-//    glColor3f(0, 0, 1);
-//    glBegin(GL_POINTS);
-//
-    for (float i = max_z; i >= min_z; i -= 0.1) {
-//        float rx = 1 - float(i * i) * (ellipsoid[2]);
-        float rx = -first_quadric.D() - i * i * first_quadric.ZZ() - i * first_quadric.Z();
-        VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
-
-        float max_y = sqrt(1 / t[1]);
-        float min_y = -sqrt(1 / t[1]);
-
-        for (float j = max_y + 1; j >= max_y - 1; j -= 0.01) {
-            if (less_zero(float(j * j) * (t[1]) - 1) || is_zero(float(j * j) * (t[1]) - 1)) {
-                float ry = 1 - float(j * j) * t[1];
-                float first_x = sqrt(ry) / sqrt(t[0]);
-
-                if (test) {
-                    intersect.emplace_back(first_x, j, i);
-                    intersect.emplace_back(-first_x, j, i);
-                    continue;
-                }
-
-                float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
-                bool correct = false, correct_less = false;
-
-                x_great = mul_reversed[0][0] * (first_x) + additional[0]
-                          + mul_reversed[1][0] * (j)
-                          + mul_reversed[2][0] * (i);
-
-                y_great = mul_reversed[0][1] * (first_x)
-                          + mul_reversed[1][1] * (j) + additional[1]
-                          + mul_reversed[2][1] * (i);
-
-                z_great = mul_reversed[2][0] * (first_x)
-                          + mul_reversed[2][1] * (j)
-                          + mul_reversed[2][2] * (i) + additional[2];
-
-                float y = y_great;
-                float z = z_great;
-
-
-                VF eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                  y * z * second_quadric.YZ()
-                                  + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                  second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                  second_quadric.XX(), 0})
-                        .solve();
-
-                for (float second_x : eq) {
-                    if (equal_eps(second_x, x_great, intersect_epsilon))
-                        correct = true;
-                }
-
-                x_less = mul_reversed[0][0] * (-first_x) + additional[0]
-                         + mul_reversed[1][0] * (j)
-                         + mul_reversed[2][0] * (i);
-
-                y_less = mul_reversed[0][1] * (-first_x)
-                         + mul_reversed[1][1] * (j) + additional[1]
-                         + mul_reversed[2][1] * (i);
-
-                z_less = mul_reversed[2][0] * (-first_x)
-                         + mul_reversed[2][1] * (j)
-                         + mul_reversed[2][2] * (i) + additional[2];
-
-                y = y_less;
-                z = z_less;
-
-                eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                               y * z * second_quadric.YZ()
-                               + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                               second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                               second_quadric.XX(), 0})
-                        .solve();
-
-                for (float second_x : eq) {
-                    if (equal_eps(second_x, x_less, edge_epsilon))
-                        correct_less = true;
-                }
-
-                if (correct) {
-                    intersect.emplace_back(first_x, j, i);
-                }
-                if (correct_less) {
-                    intersect.emplace_back(-first_x, j, i);
-                }
-            }
-        }
-
-        for (float j = min_y + 1; j >= min_y - 1; j -= 0.01) {
-            if (1 >= float(j * j) * (t[1])) {
-                float ry = 1 - float(j * j) * t[1];
-                float first_x = sqrt(ry) / sqrt(t[0]);
-
-                if (test) {
-                    intersect.emplace_back(first_x, j, i);
-                    intersect.emplace_back(-first_x, j, i);
-                    continue;
-                }
-
-                float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
-                bool correct = false, correct_less = false;
-
-                x_great = mul_reversed[0][0] * (first_x) + additional[0]
-                          + mul_reversed[1][0] * (j)
-                          + mul_reversed[2][0] * (i);
-
-                y_great = mul_reversed[0][1] * (first_x)
-                          + mul_reversed[1][1] * (j) + additional[1]
-                          + mul_reversed[2][1] * (i);
-
-                z_great = mul_reversed[2][0] * (first_x)
-                          + mul_reversed[2][1] * (j)
-                          + mul_reversed[2][2] * (i) + additional[2];
-
-                float y = y_great;
-                float z = z_great;
-
-
-                VF eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                  y * z * second_quadric.YZ()
-                                  + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                  second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                  second_quadric.XX(), 0})
-                        .solve();
-
-                for (float second_x : eq) {
-                    if (equal_eps(second_x, x_great, intersect_epsilon))
-                        correct = true;
-                }
-
-                x_less = mul_reversed[0][0] * (-first_x) + additional[0]
-                         + mul_reversed[1][0] * (j)
-                         + mul_reversed[2][0] * (i);
-
-                y_less = mul_reversed[0][1] * (-first_x)
-                         + mul_reversed[1][1] * (j) + additional[1]
-                         + mul_reversed[2][1] * (i);
-
-                z_less = mul_reversed[2][0] * (-first_x)
-                         + mul_reversed[2][1] * (j)
-                         + mul_reversed[2][2] * (i) + additional[2];
-
-                y = y_less;
-                z = z_less;
-
-                eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                               y * z * second_quadric.YZ()
-                               + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                               second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                               second_quadric.XX(), 0})
-                        .solve();
-
-                for (float second_x : eq) {
-                    if (equal_eps(second_x, x_less, edge_epsilon))
-                        correct_less = true;
-                }
-
-                if (correct) {
-                    intersect.emplace_back(first_x, j, i);
-                }
-                if (correct_less) {
-                    intersect.emplace_back(-first_x, j, i);
-                }
-            }
-        }
-    }
-
-    for (int k = 0; k < additional.size(); ++k) {
-        cout << additional[k] << " ";
-    }
-    cout << endl;
-
-    for (int l = 0; l < 3; ++l) {
-        for (int i = 0; i < 3; ++i) {
-            cout << mul_reversed[l][i] << " ";
-        }
-        cout << endl;
-    }
-
-    for (float i = max_z; i >= min_z; i -= 0.5) {
-        float rx = -first_quadric.D() - float(i * i) * first_quadric.ZZ() - i * first_quadric.Z();
-        VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
-
-        float max_y = sqrt(1 / t[1]);
-        float min_y = -sqrt(1 / t[1]);
-
-        for (float j = max_y; j >= min_y; j -= 0.1) {
-            if (1 >= float(j * j) * (t[1])) {
-                float ry = 1 - float(j * j) * t[1];
-                float first_x = sqrt(ry) / sqrt(t[0]);
-
-                if (test) {
-                    intersect.emplace_back(first_x, j, i);
-                    intersect.emplace_back(-first_x, j, i);
-                    continue;
-                }
-
-                float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
-                bool correct = false, correct_less = false;
-
-                x_great = mul_reversed[0][0] * (first_x) + additional[0]
-                          + mul_reversed[1][0] * (j)
-                          + mul_reversed[2][0] * (i);
-
-                y_great = mul_reversed[0][1] * (first_x)
-                          + mul_reversed[1][1] * (j) + additional[1]
-                          + mul_reversed[2][1] * (i);
-
-                z_great = mul_reversed[2][0] * (first_x)
-                          + mul_reversed[2][1] * (j)
-                          + mul_reversed[2][2] * (i) + additional[2];
-
-                float y = y_great;
-                float z = z_great;
-
-
-                VF equation_coefs = VF{second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                       y * z * second_quadric.YZ()
-                                       + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                       second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                       second_quadric.XX(), 0};
-                VF eq = Equation(equation_coefs)
-                        .solve();
-
-                for (float second_x : eq) {
-                    if (equal_eps(second_x, x_great, intersect_epsilon))
-                        correct = true;
-                }
-
-                if (!correct) {
-                    bool zeros = true;
-                    for (float c : equation_coefs) {
-                        zeros = zeros && is_zero(c);
-                    }
-                    correct = zeros;
-                }
-
-
-                x_less = mul_reversed[0][0] * (-first_x) + additional[0]
-                         + mul_reversed[1][0] * (j)
-                         + mul_reversed[2][0] * (i);
-
-                y_less = mul_reversed[0][1] * (-first_x)
-                         + mul_reversed[1][1] * (j) + additional[1]
-                         + mul_reversed[2][1] * (i);
-
-                z_less = mul_reversed[2][0] * (-first_x)
-                         + mul_reversed[2][1] * (j)
-                         + mul_reversed[2][2] * (i) + additional[2];
-
-                y = y_less;
-                z = z_less;
-
-                equation_coefs = VF{second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                    y * z * second_quadric.YZ()
-                                    + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                    second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                    second_quadric.XX(), 0};
-
-                eq = Equation(equation_coefs)
-                        .solve();
-
-                for (float second_x : eq) {
-                    if (equal_eps(second_x, x_less, intersect_epsilon))
-                        correct_less = true;
-                }
-
-
-                if (!correct_less) {
-                    bool zeros = true;
-                    for (float c : equation_coefs) {
-                        zeros = zeros && is_zero(c);
-                    }
-                    correct_less = zeros;
-                }
-
-
-                if (correct) {
-                    intersect.emplace_back(first_x, j, i);
-                }
-                if (correct_less) {
-                    intersect.emplace_back(-first_x, j, i);
-                }
-            }
-        }
-    }
-
-    return intersect;
-}
-
-
-vector<Point> make_ph_intersect() {
-
-    vector<Point> intersect;
-
-    auto first_quadric = first_equation->get_canonical();
-    auto second_quadric = second_equation->get_equation();
-
-    vector<VF> mul_reversed = Matrix(first_equation->get_mul_matrix()).reverse();
-    VF additional = first_equation->get_additional_vector();
-
-    float intersect_epsilon = 1, edge_epsilon = 2.5;
-
-    float max_x = 150;
-    float min_x = -150;
-
-    float size_z = 50;
-
-    bool test = false;
-
-
-    for (float i = min_x; i <= max_x; i += 0.1) {
-
-        VF t = VF{first_quadric.XX() * i * i, -first_quadric.YY()};
-
-        for (float j = t[0]; j >= -size_z + t[0] - max_x * max_x * first_quadric.XX(); j -= 0.5) {
-            float ry = t[0] - j;
-            float first_y = sqrt(ry) / sqrt(t[1]);
-
-            if (test) {
-                intersect.emplace_back(first_y, j, i);
-                intersect.emplace_back(-first_y, j, i);
-                continue;
-            }
-
-            // i - x
-            // j - z
-
-            float x_less, x_great, z_less, z_great, val_less = -first_y, val_great = first_y;
-            bool correct = false, correct_less = false;
-
-            x_great = mul_reversed[0][0] * (i) + additional[0]
-                      + mul_reversed[1][0] * (first_y)
-                      + mul_reversed[2][0] * (j);
-
-            val_great = mul_reversed[0][1] * (i)
-                        + mul_reversed[1][1] * (first_y) + additional[1]
-                        + mul_reversed[2][1] * (j);
-
-            z_great = mul_reversed[2][0] * (i)
-                      + mul_reversed[2][1] * (first_y)
-                      + mul_reversed[2][2] * (j) + additional[2];
-
-            float x = x_great;
-            float z = z_great;
-
-
-            VF eq = Equation({second_quadric.D() + x * second_quadric.X() + z * second_quadric.Z() +
-                              x * z * second_quadric.XZ()
-                              + x * x * second_quadric.XX() + z * z * second_quadric.ZZ(),
-                              second_quadric.Y() + z * second_quadric.YZ() + x * second_quadric.XY(),
-                              second_quadric.YY(), 0})
-                    .solve();
-
-            for (float second_y : eq) {
-                if (equal_eps(second_y, val_great, intersect_epsilon))
-                    correct = true;
-            }
-
-            x_less = mul_reversed[0][0] * (i) + additional[0]
-                     + mul_reversed[1][0] * (-first_y)
-                     + mul_reversed[2][0] * (j);
-
-            val_less = mul_reversed[0][1] * (i)
-                       + mul_reversed[1][1] * (-first_y) + additional[1]
-                       + mul_reversed[2][1] * (j);
-
-            z_less = mul_reversed[2][0] * (i)
-                     + mul_reversed[2][1] * (-first_y)
-                     + mul_reversed[2][2] * (j) + additional[2];
-
-            x = x_less;
-            z = z_less;
-
-            eq = Equation({second_quadric.D() + x * second_quadric.X() + z * second_quadric.Z() +
-                           x * z * second_quadric.XZ()
-                           + x * x * second_quadric.XX() + z * z * second_quadric.ZZ(),
-                           second_quadric.Y() + z * second_quadric.YZ() + x * second_quadric.XY(),
-                           second_quadric.YY(), 0})
-                    .solve();
-
-            for (float second_y : eq) {
-                if (equal_eps(second_y, val_less, edge_epsilon))
-                    correct_less = true;
-            }
-
-            if (correct) {
-                intersect.emplace_back(i, first_y, j);
-            }
-            if (correct_less) {
-                intersect.emplace_back(i, -first_y, j);
-            }
-        }
-    }
-
-    for (int k = 0; k < additional.size(); ++k) {
-        cout << additional[k] << " ";
-    }
-    cout << endl;
-
-    for (int l = 0; l < 3; ++l) {
-        for (int i = 0; i < 3; ++i) {
-            cout << mul_reversed[l][i] << " ";
-        }
-        cout << endl;
-    }
-
-    return intersect;
-}
-
 void draw_intersect(VP intersect) {
     glColor4f(0, 0, 1, 1);
     glPointSize(5);
     glBegin(GL_POINTS);
     for (Point p : intersect) {
-        //cout << p.x << " " << p.y << " " << p.z << endl;
         glVertex3f(p.x, p.y, p.z);
     }
     glEnd();
@@ -612,19 +168,16 @@ GLFWwindow *initWindow(const int resX, const int resY) {
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, key_callback);
 
-    glEnable(GL_DEPTH_TEST);  // Depth Testing
+    glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
 
     glEnable(GL_ALPHA_TEST);
-    glEnable(GL_BLEND); //Enable blending.
+    glEnable(GL_BLEND);
     glEnable(GL_COLOR_MATERIAL);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
-
-//    GLfloat lightpos[] = {0., 0., 1., 0.};
-//    glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     return window;
 }
@@ -695,17 +248,16 @@ void render_z_ort() {
 
 }
 
-
-//void display(GLFWwindow *window, vector<float> first_params, vector<float> second_params) {
 void display(GLFWwindow *window) {
 
-    vector<Point> vertices_first, vertices_second, intersect;
+    vector<Point> vertices_first, vertices_second, intersection;
+    InterSect interSect(first_equation, second_equation, first_surface, second_surface);
 
     vertices_second = second_surface->make_mash();
 
     if(!equal_surfaces){
         vertices_first = first_surface->make_mash();
-        intersect = create_intersect();
+        intersection = interSect.create_intersect();
     }
 
     while (!glfwWindowShouldClose(window)) {
@@ -755,7 +307,7 @@ void display(GLFWwindow *window) {
 
             glMultMatrixf(mulm);
 
-            draw_intersect(intersect);
+            draw_intersect(intersection);
 
             drawSurface(vertices_first, {0, 1, 0, 0.3}, 0);
 
@@ -829,14 +381,10 @@ bool read_equations() {
     vector<string> first_params(params.begin() + 10, params.begin() + 20);
     vector<string> second_params(params.begin() + 20, params.begin() + 30);
     for (int i = 0; i < first_params.size(); ++i) {
-        //cout << i << " " << first_params[i] << endl;
         first_coefs.push_back(stof(first_params[i]));
-        //cout << i << " " << first_coefs[i] << endl;
     }
     for (int i = 0; i < second_params.size(); ++i) {
-        //cout << i << " " << second_params[i] << endl;
         second_coefs.push_back(stof(second_params[i]));
-        //cout << i << " " << second_coefs[i] << endl;
     }
     return true;
 }
@@ -903,7 +451,7 @@ int main(int argc, char **argv) {
     second_surface = shared_ptr<AbstractSurface>(make_surface(*second_equation));
 
 
-    GLFWwindow *window = initWindow(800, 700);
+    GLFWwindow *window = initWindow(RESX, RESY);
     if (nullptr != window) {
         display(window);
     }
