@@ -13,6 +13,7 @@
 #include "Surfaces/HyperboloidTwoSheet.h"
 #include "Evaluations/Matrix.h"
 #include "Surfaces/ParaboloidHyperbolic.h"
+#include "Surfaces/EmptySurface.h"
 
 typedef tuple<float, float, float, float> tuple4f;
 typedef vector<Point> VP;
@@ -207,10 +208,10 @@ vector<Point> make_intersect() {
     float max_z = first_surface->max_z();
     float min_z = first_surface->min_z();
 
-    if (first_equation->get_type() == ELLIPSOID) {
-        max_z = 1 / sqrt(first_quadric.ZZ());
-        min_z = -max_z;
-    }
+//    if (first_equation->get_type() == ELLIPSOID) {
+//        max_z = 1 / sqrt(first_quadric.ZZ());
+//        min_z = -max_z;
+//    }
 
     bool test = false;
 
@@ -431,17 +432,27 @@ vector<Point> make_intersect() {
                 float z = z_great;
 
 
-                VF eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                  y * z * second_quadric.YZ()
-                                  + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                  second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                  second_quadric.XX(), 0})
+                VF equation_coefs = VF{second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+                                       y * z * second_quadric.YZ()
+                                       + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+                                       second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+                                       second_quadric.XX(), 0};
+                VF eq = Equation(equation_coefs)
                         .solve();
 
                 for (float second_x : eq) {
                     if (equal_eps(second_x, x_great, intersect_epsilon))
                         correct = true;
                 }
+
+                if (!correct) {
+                    bool zeros = true;
+                    for (float c : equation_coefs) {
+                        zeros = zeros && is_zero(c);
+                    }
+                    correct = zeros;
+                }
+
 
                 x_less = mul_reversed[0][0] * (-first_x) + additional[0]
                          + mul_reversed[1][0] * (j)
@@ -458,17 +469,29 @@ vector<Point> make_intersect() {
                 y = y_less;
                 z = z_less;
 
-                eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                               y * z * second_quadric.YZ()
-                               + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                               second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                               second_quadric.XX(), 0})
+                equation_coefs = VF{second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+                                    y * z * second_quadric.YZ()
+                                    + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+                                    second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+                                    second_quadric.XX(), 0};
+
+                eq = Equation(equation_coefs)
                         .solve();
 
                 for (float second_x : eq) {
                     if (equal_eps(second_x, x_less, intersect_epsilon))
                         correct_less = true;
                 }
+
+
+                if (!correct_less) {
+                    bool zeros = true;
+                    for (float c : equation_coefs) {
+                        zeros = zeros && is_zero(c);
+                    }
+                    correct_less = zeros;
+                }
+
 
                 if (correct) {
                     intersect.emplace_back(first_x, j, i);
@@ -553,25 +576,25 @@ vector<Point> make_ph_intersect() {
             }
 
             x_less = mul_reversed[0][0] * (i) + additional[0]
-                      + mul_reversed[1][0] * (-first_y)
-                      + mul_reversed[2][0] * (j);
+                     + mul_reversed[1][0] * (-first_y)
+                     + mul_reversed[2][0] * (j);
 
             val_less = mul_reversed[0][1] * (i)
-                        + mul_reversed[1][1] * (-first_y) + additional[1]
-                        + mul_reversed[2][1] * (j);
+                       + mul_reversed[1][1] * (-first_y) + additional[1]
+                       + mul_reversed[2][1] * (j);
 
             z_less = mul_reversed[2][0] * (i)
-                      + mul_reversed[2][1] * (-first_y)
-                      + mul_reversed[2][2] * (j) + additional[2];
+                     + mul_reversed[2][1] * (-first_y)
+                     + mul_reversed[2][2] * (j) + additional[2];
 
             x = x_less;
             z = z_less;
 
             eq = Equation({second_quadric.D() + x * second_quadric.X() + z * second_quadric.Z() +
-                              x * z * second_quadric.XZ()
-                              + x * x * second_quadric.XX() + z * z * second_quadric.ZZ(),
-                              second_quadric.Y() + z * second_quadric.YZ() + x * second_quadric.XY(),
-                              second_quadric.YY(), 0})
+                           x * z * second_quadric.XZ()
+                           + x * x * second_quadric.XX() + z * z * second_quadric.ZZ(),
+                           second_quadric.Y() + z * second_quadric.YZ() + x * second_quadric.XY(),
+                           second_quadric.YY(), 0})
                     .solve();
 
             for (float second_y : eq) {
@@ -741,7 +764,7 @@ void display(GLFWwindow *window) {
         glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
         glViewport(0, 0, windowWidth, windowHeight);
 
-        //glClearColor(0.7, 1, 1, 1.0);
+        //glClearColor(0.8, 0.8, 0.8, 1.0);
         glClearColor(1, 1, 1, 1.);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -905,7 +928,7 @@ AbstractSurface *make_surface(SurfaceEquation &se) {
                                        sqrt(1 / se.get_canonical().YY()),
                                        sqrt(-1 / se.get_canonical().ZZ()));
     }
-    return nullptr;
+    return new EmptySurface();
 }
 
 int main(int argc, char **argv) {
