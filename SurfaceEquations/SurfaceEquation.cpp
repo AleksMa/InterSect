@@ -221,7 +221,6 @@ QuadricEquation SurfaceEquation::canonizate() {
             temporary.Y() = 2 * sqrt(temporary.Y() * temporary.Y() / 4 + temporary.Z() * temporary.Z() / 4);
             temporary.Z() = 0;
         }
-        // TODO: X & Y, X & Z
 
         if (!is_zero(temporary.X()) && !is_zero(temporary.D())) {
             // x => (x + D)

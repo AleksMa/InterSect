@@ -1,5 +1,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <memory>
 #include <vector>
 #include "bits/stdc++.h"
 #include "Primary/Point.h"
@@ -439,8 +440,8 @@ int main(int argc, char **argv) {
 
     equal_surfaces = check_equal();
 
-    first_equation = shared_ptr<SurfaceEquation>(new SurfaceEquation(first_coefs));
-    second_equation = shared_ptr<SurfaceEquation>(new SurfaceEquation(second_coefs));
+    first_equation = std::make_shared<SurfaceEquation>(first_coefs);
+    second_equation = std::make_shared<SurfaceEquation>(second_coefs);
 
     first_equation->canonizate();
     cout << "FIRST TYPE: " << first_equation->get_type() << endl;

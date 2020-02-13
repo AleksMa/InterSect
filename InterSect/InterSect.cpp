@@ -21,7 +21,7 @@ vector<Point> InterSect::make_intersect() {
     auto first_quadric = first_equation->get_canonical();
     auto second_quadric = second_equation->get_equation();
 
-    vector<vector<float>> mul_reversed = Matrix(first_equation->get_mul_matrix()).reverse();
+    vector<vector<float>> mul = first_equation->get_mul_matrix();
     vector<float> additional = first_equation->get_additional_vector();
 
     float intersect_epsilon = 1, edge_epsilon = 2.5;
@@ -33,7 +33,7 @@ vector<Point> InterSect::make_intersect() {
 
     float z_iter = max_z;
 
-    while ( z_iter >= min_z) {
+    while (z_iter >= min_z) {
         float rx = -first_quadric.D() - z_iter * z_iter * first_quadric.ZZ() - z_iter * first_quadric.Z();
         VF t = VF{first_quadric.XX() / rx, first_quadric.YY() / rx};
 
@@ -56,17 +56,17 @@ vector<Point> InterSect::make_intersect() {
                 float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
                 bool correct = false, correct_less = false;
 
-                x_great = mul_reversed[0][0] * (first_x) + additional[0]
-                          + mul_reversed[1][0] * (y_iter)
-                          + mul_reversed[2][0] * (z_iter);
+                x_great = mul[0][0] * (first_x) + additional[0]
+                          + mul[0][1] * (y_iter)
+                          + mul[0][2] * (z_iter);
 
-                y_great = mul_reversed[0][1] * (first_x)
-                          + mul_reversed[1][1] * (y_iter) + additional[1]
-                          + mul_reversed[2][1] * (z_iter);
+                y_great = mul[1][0] * (first_x)
+                          + mul[1][1] * (y_iter) + additional[1]
+                          + mul[1][2] * (z_iter);
 
-                z_great = mul_reversed[2][0] * (first_x)
-                          + mul_reversed[2][1] * (y_iter)
-                          + mul_reversed[2][2] * (z_iter) + additional[2];
+                z_great = mul[2][0] * (first_x)
+                          + mul[2][1] * (y_iter)
+                          + mul[2][2] * (z_iter) + additional[2];
 
                 float y = y_great;
                 float z = z_great;
@@ -94,17 +94,17 @@ vector<Point> InterSect::make_intersect() {
                 }
 
 
-                x_less = mul_reversed[0][0] * (-first_x) + additional[0]
-                         + mul_reversed[1][0] * (y_iter)
-                         + mul_reversed[2][0] * (z_iter);
+                x_less = mul[0][0] * (-first_x) + additional[0]
+                         + mul[0][1] * (y_iter)
+                         + mul[0][2] * (z_iter);
 
-                y_less = mul_reversed[0][1] * (-first_x)
-                         + mul_reversed[1][1] * (y_iter) + additional[1]
-                         + mul_reversed[2][1] * (z_iter);
+                y_less = mul[1][0] * (-first_x)
+                         + mul[1][1] * (y_iter) + additional[1]
+                         + mul[1][2] * (z_iter);
 
-                z_less = mul_reversed[2][0] * (-first_x)
-                         + mul_reversed[2][1] * (y_iter)
-                         + mul_reversed[2][2] * (z_iter) + additional[2];
+                z_less = mul[2][0] * (-first_x)
+                         + mul[2][1] * (y_iter)
+                         + mul[2][2] * (z_iter) + additional[2];
 
                 y = y_less;
                 z = z_less;
@@ -158,17 +158,17 @@ vector<Point> InterSect::make_intersect() {
                 float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
                 bool correct = false, correct_less = false;
 
-                x_great = mul_reversed[0][0] * (first_x) + additional[0]
-                          + mul_reversed[1][0] * (y_iter)
-                          + mul_reversed[2][0] * (z_iter);
+                x_great = mul[0][0] * (first_x) + additional[0]
+                          + mul[0][1] * (y_iter)
+                          + mul[0][2] * (z_iter);
 
-                y_great = mul_reversed[0][1] * (first_x)
-                          + mul_reversed[1][1] * (y_iter) + additional[1]
-                          + mul_reversed[2][1] * (z_iter);
+                y_great = mul[1][0] * (first_x)
+                          + mul[1][1] * (y_iter) + additional[1]
+                          + mul[1][2] * (z_iter);
 
-                z_great = mul_reversed[2][0] * (first_x)
-                          + mul_reversed[2][1] * (y_iter)
-                          + mul_reversed[2][2] * (z_iter) + additional[2];
+                z_great = mul[2][0] * (first_x)
+                          + mul[2][1] * (y_iter)
+                          + mul[2][2] * (z_iter) + additional[2];
 
                 float y = y_great;
                 float z = z_great;
@@ -196,17 +196,17 @@ vector<Point> InterSect::make_intersect() {
                 }
 
 
-                x_less = mul_reversed[0][0] * (-first_x) + additional[0]
-                         + mul_reversed[1][0] * (y_iter)
-                         + mul_reversed[2][0] * (z_iter);
+                x_less = mul[0][0] * (-first_x) + additional[0]
+                         + mul[0][1] * (y_iter)
+                         + mul[0][2] * (z_iter);
 
-                y_less = mul_reversed[0][1] * (-first_x)
-                         + mul_reversed[1][1] * (y_iter) + additional[1]
-                         + mul_reversed[2][1] * (z_iter);
+                y_less = mul[1][0] * (-first_x)
+                         + mul[1][1] * (y_iter) + additional[1]
+                         + mul[1][2] * (z_iter);
 
-                z_less = mul_reversed[2][0] * (-first_x)
-                         + mul_reversed[2][1] * (y_iter)
-                         + mul_reversed[2][2] * (z_iter) + additional[2];
+                z_less = mul[2][0] * (-first_x)
+                         + mul[2][1] * (y_iter)
+                         + mul[2][2] * (z_iter) + additional[2];
 
                 y = y_less;
                 z = z_less;
@@ -254,7 +254,7 @@ vector<Point> InterSect::make_intersect() {
 
     for (int l = 0; l < 3; ++l) {
         for (int i = 0; i < 3; ++i) {
-            cout << mul_reversed[l][i] << " ";
+            cout << mul[l][i] << " ";
         }
         cout << endl;
     }
@@ -284,17 +284,17 @@ vector<Point> InterSect::make_intersect() {
                 float y_less, y_great, z_less, z_great, x_less = -first_x, x_great = first_x;
                 bool correct = false, correct_less = false;
 
-                x_great = mul_reversed[0][0] * (first_x) + additional[0]
-                          + mul_reversed[1][0] * (y_iter)
-                          + mul_reversed[2][0] * (z_iter);
+                x_great = mul[0][0] * (first_x) + additional[0]
+                          + mul[0][1] * (y_iter)
+                          + mul[0][2] * (z_iter);
 
-                y_great = mul_reversed[0][1] * (first_x)
-                          + mul_reversed[1][1] * (y_iter) + additional[1]
-                          + mul_reversed[2][1] * (z_iter);
+                y_great = mul[1][0] * (first_x)
+                          + mul[1][1] * (y_iter) + additional[1]
+                          + mul[1][2] * (z_iter);
 
-                z_great = mul_reversed[2][0] * (first_x)
-                          + mul_reversed[2][1] * (y_iter)
-                          + mul_reversed[2][2] * (z_iter) + additional[2];
+                z_great = mul[2][0] * (first_x)
+                          + mul[2][1] * (y_iter)
+                          + mul[2][2] * (z_iter) + additional[2];
 
                 float y = y_great;
                 float z = z_great;
@@ -334,17 +334,17 @@ vector<Point> InterSect::make_intersect() {
                 }
 
 
-                x_less = mul_reversed[0][0] * (-first_x) + additional[0]
-                         + mul_reversed[1][0] * (y_iter)
-                         + mul_reversed[2][0] * (z_iter);
+                x_less = mul[0][0] * (-first_x) + additional[0]
+                         + mul[0][1] * (y_iter)
+                         + mul[0][2] * (z_iter);
 
-                y_less = mul_reversed[0][1] * (-first_x)
-                         + mul_reversed[1][1] * (y_iter) + additional[1]
-                         + mul_reversed[2][1] * (z_iter);
+                y_less = mul[1][0] * (-first_x)
+                         + mul[1][1] * (y_iter) + additional[1]
+                         + mul[1][2] * (z_iter);
 
-                z_less = mul_reversed[2][0] * (-first_x)
-                         + mul_reversed[2][1] * (y_iter)
-                         + mul_reversed[2][2] * (z_iter) + additional[2];
+                z_less = mul[2][0] * (-first_x)
+                         + mul[2][1] * (y_iter)
+                         + mul[2][2] * (z_iter) + additional[2];
 
                 y = y_less;
                 z = z_less;
@@ -396,7 +396,7 @@ vector<Point> InterSect::make_ph_intersect() {
     auto first_quadric = first_equation->get_canonical();
     auto second_quadric = second_equation->get_equation();
 
-    vector<VF> mul_reversed = Matrix(first_equation->get_mul_matrix()).reverse();
+    vector<VF> mul = first_equation->get_mul_matrix();
     VF additional = first_equation->get_additional_vector();
 
     float intersect_epsilon = 1, edge_epsilon = 2.5;
@@ -434,17 +434,17 @@ vector<Point> InterSect::make_ph_intersect() {
             float x_less, x_great, z_less, z_great, val_less = -first_y, val_great = first_y;
             bool correct = false, correct_less = false;
 
-            x_great = mul_reversed[0][0] * (x_iter) + additional[0]
-                      + mul_reversed[1][0] * (first_y)
-                      + mul_reversed[2][0] * (z_iter);
+            x_great = mul[0][0] * (x_iter) + additional[0]
+                      + mul[0][1] * (first_y)
+                      + mul[0][2] * (z_iter);
 
-            val_great = mul_reversed[0][1] * (x_iter)
-                        + mul_reversed[1][1] * (first_y) + additional[1]
-                        + mul_reversed[2][1] * (z_iter);
+            val_great = mul[1][0] * (x_iter)
+                        + mul[1][1] * (first_y) + additional[1]
+                        + mul[1][2] * (z_iter);
 
-            z_great = mul_reversed[2][0] * (x_iter)
-                      + mul_reversed[2][1] * (first_y)
-                      + mul_reversed[2][2] * (z_iter) + additional[2];
+            z_great = mul[2][0] * (x_iter)
+                      + mul[2][1] * (first_y)
+                      + mul[2][2] * (z_iter) + additional[2];
 
             float x = x_great;
             float z = z_great;
@@ -471,17 +471,17 @@ vector<Point> InterSect::make_ph_intersect() {
                 correct = zeros;
             }
 
-            x_less = mul_reversed[0][0] * (x_iter) + additional[0]
-                     + mul_reversed[1][0] * (-first_y)
-                     + mul_reversed[2][0] * (z_iter);
+            x_less = mul[0][0] * (x_iter) + additional[0]
+                      + mul[0][1] * (first_y)
+                      + mul[0][2] * (z_iter);
 
-            val_less = mul_reversed[0][1] * (x_iter)
-                       + mul_reversed[1][1] * (-first_y) + additional[1]
-                       + mul_reversed[2][1] * (z_iter);
+            val_less = mul[1][0] * (x_iter)
+                        + mul[1][1] * (first_y) + additional[1]
+                        + mul[1][2] * (z_iter);
 
-            z_less = mul_reversed[2][0] * (x_iter)
-                     + mul_reversed[2][1] * (-first_y)
-                     + mul_reversed[2][2] * (z_iter) + additional[2];
+            z_less = mul[2][0] * (x_iter)
+                      + mul[2][1] * (first_y)
+                      + mul[2][2] * (z_iter) + additional[2];
 
             x = x_less;
             z = z_less;
@@ -530,7 +530,7 @@ vector<Point> InterSect::make_ph_intersect() {
 
     for (int l = 0; l < 3; ++l) {
         for (int i = 0; i < 3; ++i) {
-            cout << mul_reversed[l][i] << " ";
+            cout << mul[l][i] << " ";
         }
         cout << endl;
     }
@@ -538,8 +538,9 @@ vector<Point> InterSect::make_ph_intersect() {
     return intersect;
 }
 
-InterSect::InterSect(shared_ptr<SurfaceEquation> first_e, shared_ptr <SurfaceEquation> second_equation,
-                     shared_ptr<AbstractSurface> first_surface, shared_ptr <AbstractSurface> second_surface): first_equation(std::move(first_e)),
-                                                                                                              second_equation(std::move(second_equation)),
-                                                                                                              first_surface(std::move(first_surface)),
-                                                                                                              second_surface(std::move(second_surface)) {}
+InterSect::InterSect(shared_ptr<SurfaceEquation> first_e, shared_ptr<SurfaceEquation> second_equation,
+                     shared_ptr<AbstractSurface> first_surface, shared_ptr<AbstractSurface> second_surface)
+        : first_equation(std::move(first_e)),
+          second_equation(std::move(second_equation)),
+          first_surface(std::move(first_surface)),
+          second_surface(std::move(second_surface)) {}
