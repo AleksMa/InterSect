@@ -81,14 +81,14 @@ vector<Point> InterSect::make_intersect() {
                         .solve();
 
                 for (float second_x : eq) {
-                    if (equal_eps(second_x, x_great, intersect_epsilon))
+                    if (equal_eps(second_x, x_great, edge_epsilon))
                         correct = true;
                 }
 
                 if (!correct) {
-                    bool zeros = true;
-                    for (float c : equation_coefs) {
-                        zeros = zeros && is_zero_eps(c, y_step);
+                    bool zeros = is_zero_eps(equation_coefs[0], y_step);
+                    for (int k = 1; k < equation_coefs.size(); k++) {
+                        zeros = zeros && is_zero(equation_coefs[k]);
                     }
                     correct = zeros;
                 }
@@ -119,15 +119,15 @@ vector<Point> InterSect::make_intersect() {
                         .solve();
 
                 for (float second_x : eq) {
-                    if (equal_eps(second_x, x_less, intersect_epsilon))
+                    if (equal_eps(second_x, x_less, edge_epsilon))
                         correct_less = true;
                 }
 
 
                 if (!correct_less) {
-                    bool zeros = true;
-                    for (float c : equation_coefs) {
-                        zeros = zeros && is_zero_eps(c, y_step);
+                    bool zeros = is_zero_eps(equation_coefs[0], y_step);
+                    for (int k = 1; k < equation_coefs.size(); k++) {
+                        zeros = zeros && is_zero(equation_coefs[k]);
                     }
                     correct_less = zeros;
                 }
@@ -183,14 +183,14 @@ vector<Point> InterSect::make_intersect() {
                         .solve();
 
                 for (float second_x : eq) {
-                    if (equal_eps(second_x, x_great, intersect_epsilon))
+                    if (equal_eps(second_x, x_great, edge_epsilon))
                         correct = true;
                 }
 
                 if (!correct) {
-                    bool zeros = true;
-                    for (float c : equation_coefs) {
-                        zeros = zeros && is_zero_eps(c, y_step);
+                    bool zeros = is_zero_eps(equation_coefs[0], y_step);
+                    for (int k = 1; k < equation_coefs.size(); k++) {
+                        zeros = zeros && is_zero(equation_coefs[k]);
                     }
                     correct = zeros;
                 }
@@ -221,15 +221,15 @@ vector<Point> InterSect::make_intersect() {
                         .solve();
 
                 for (float second_x : eq) {
-                    if (equal_eps(second_x, x_less, intersect_epsilon))
+                    if (equal_eps(second_x, x_less, edge_epsilon))
                         correct_less = true;
                 }
 
 
                 if (!correct_less) {
-                    bool zeros = true;
-                    for (float c : equation_coefs) {
-                        zeros = zeros && is_zero_eps(c, y_step);
+                    bool zeros = is_zero_eps(equation_coefs[0], y_step);
+                    for (int k = 1; k < equation_coefs.size(); k++) {
+                        zeros = zeros && is_zero(equation_coefs[k]);
                     }
                     correct_less = zeros;
                 }
@@ -319,16 +319,16 @@ vector<Point> InterSect::make_intersect() {
 //                cout << endl;
 
                 for (float second_x : eq) {
-                    //cout << second_x << " ";
+//                    cout << second_x << " ";
                     if (equal_eps(second_x, x_great, intersect_epsilon))
                         correct = true;
                 }
-                //cout << endl;
+//                cout << endl;
 
                 if (!correct) {
-                    bool zeros = true;
-                    for (float c : equation_coefs) {
-                        zeros = zeros && is_zero_eps(c, y_step);
+                    bool zeros = is_zero_eps(equation_coefs[0], y_step);
+                    for (int k = 1; k < equation_coefs.size(); k++) {
+                        zeros = zeros && is_zero(equation_coefs[k]);
                     }
                     correct = zeros;
                 }
@@ -365,9 +365,9 @@ vector<Point> InterSect::make_intersect() {
 
 
                 if (!correct_less) {
-                    bool zeros = true;
-                    for (float c : equation_coefs) {
-                        zeros = zeros && is_zero_eps(c, y_step);
+                    bool zeros = is_zero_eps(equation_coefs[0], y_step);
+                    for (int k = 1; k < equation_coefs.size(); k++) {
+                        zeros = zeros && is_zero(equation_coefs[k]);
                     }
                     correct_less = zeros;
                 }
@@ -464,9 +464,9 @@ vector<Point> InterSect::make_ph_intersect() {
             }
 
             if (!correct) {
-                bool zeros = true;
-                for (float c : equation_coefs) {
-                    zeros = zeros && is_zero_eps(c, y_step);
+                bool zeros = is_zero_eps(equation_coefs[0], y_step);
+                for (int k = 1; k < equation_coefs.size(); k++) {
+                    zeros = zeros && is_zero(equation_coefs[k]);
                 }
                 correct = zeros;
             }
@@ -501,9 +501,9 @@ vector<Point> InterSect::make_ph_intersect() {
             }
 
             if (!correct_less) {
-                bool zeros = true;
-                for (float c : equation_coefs) {
-                    zeros = zeros && is_zero_eps(c, y_step);
+                bool zeros = is_zero_eps(equation_coefs[0], y_step);
+                for (int k = 1; k < equation_coefs.size(); k++) {
+                    zeros = zeros && is_zero(equation_coefs[k]);
                 }
                 correct_less = zeros;
             }
