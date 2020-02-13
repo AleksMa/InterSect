@@ -29,7 +29,6 @@ typedef vector<float> VF;
 using namespace std;
 
 
-
 GLfloat a = -90.f, b = 0.f, c = -90.f;
 //GLfloat a = 0.f, b = 0.f, c = 0.f;
 GLfloat x = 0.f, y = 0.f, z = 0.f;
@@ -256,7 +255,7 @@ void display(GLFWwindow *window) {
 
     vertices_second = second_surface->make_mash();
 
-    if(!equal_surfaces){
+    if (!equal_surfaces) {
         vertices_first = first_surface->make_mash();
         intersection = interSect.create_intersect();
     }
@@ -413,7 +412,7 @@ AbstractSurface *make_surface(SurfaceEquation &se) {
     return new EmptySurface();
 }
 
-bool check_equal(){
+bool check_equal() {
     float coef = 0;
     bool equals_temp = true;
     for (int i = 0; i < 10; ++i) {
@@ -450,6 +449,16 @@ int main(int argc, char **argv) {
     second_equation->canonizate();
     cout << "SECOND TYPE: " << second_equation->get_type() << endl;
     second_surface = shared_ptr<AbstractSurface>(make_surface(*second_equation));
+
+    if (first_equation->get_type() == UNKNOWN) {
+        if (second_equation->get_type() != UNKNOWN) {
+            swap(first_equation, second_equation);
+            swap(first_surface, second_surface);
+        } else {
+            cout << "UNEXPECTED SURFACE" << endl;
+            exit(1);
+        }
+    }
 
 
     GLFWwindow *window = initWindow(RESX, RESY);

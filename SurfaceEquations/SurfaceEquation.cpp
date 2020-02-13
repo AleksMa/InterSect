@@ -277,6 +277,8 @@ QuadricEquation SurfaceEquation::canonizate() {
             }
             if (k == 2) {
                 // HYPERBOLOID
+                if (is_zero(temporary.D()))
+                    temporary.D() = -1e-4;
                 if (less_zero(temporary.XX())) {
                     swap(mul_finally[0], mul_finally[2]);
                     swap(temporary.XX(), temporary.ZZ());
