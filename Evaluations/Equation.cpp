@@ -40,6 +40,9 @@ vector<float> Equation::solve_sqr(bool from_digits) {
     if (!from_digits)
         i++;
     float C = equation[i], B = equation[i + 1], A = equation[i + 2];
+    if (is_zero(A)) {
+        return {-C / B};
+    }
     float D = B * B - 4 * A * C;
     if (less_zero(D))
         return vector<float>();

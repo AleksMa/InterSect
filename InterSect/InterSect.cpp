@@ -40,9 +40,9 @@ vector<Point> InterSect::make_intersect() {
         float max_y = sqrt(1 / t[1]);
         float min_y = -sqrt(1 / t[1]);
 
-        float y_iter = max_y + 1;
+        float y_iter = max_y + 0.001;
 
-        while (y_iter >= max_y - 1) {
+        while (y_iter >= max_y - 2) {
             if (less_zero(float(y_iter * y_iter) * (t[1]) - 1) || is_zero(float(y_iter * y_iter) * (t[1]) - 1)) {
                 float ry = 1 - float(y_iter * y_iter) * t[1];
                 float first_x = sqrt(ry) / sqrt(t[0]);
@@ -72,17 +72,27 @@ vector<Point> InterSect::make_intersect() {
                 float z = z_great;
 
 
-                VF eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                  y * z * second_quadric.YZ()
-                                  + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                  second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                  second_quadric.XX(), 0})
+                VF equation_coefs = VF{second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+                                       y * z * second_quadric.YZ()
+                                       + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+                                       second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+                                       second_quadric.XX(), 0};
+                VF eq = Equation(equation_coefs)
                         .solve();
 
                 for (float second_x : eq) {
                     if (equal_eps(second_x, x_great, intersect_epsilon))
                         correct = true;
                 }
+
+                if (!correct) {
+                    bool zeros = true;
+                    for (float c : equation_coefs) {
+                        zeros = zeros && is_zero_eps(c, y_step);
+                    }
+                    correct = zeros;
+                }
+
 
                 x_less = mul_reversed[0][0] * (-first_x) + additional[0]
                          + mul_reversed[1][0] * (y_iter)
@@ -99,17 +109,29 @@ vector<Point> InterSect::make_intersect() {
                 y = y_less;
                 z = z_less;
 
-                eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                               y * z * second_quadric.YZ()
-                               + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                               second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                               second_quadric.XX(), 0})
+                equation_coefs = VF{second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+                                    y * z * second_quadric.YZ()
+                                    + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+                                    second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+                                    second_quadric.XX(), 0};
+
+                eq = Equation(equation_coefs)
                         .solve();
 
                 for (float second_x : eq) {
-                    if (equal_eps(second_x, x_less, edge_epsilon))
+                    if (equal_eps(second_x, x_less, intersect_epsilon))
                         correct_less = true;
                 }
+
+
+                if (!correct_less) {
+                    bool zeros = true;
+                    for (float c : equation_coefs) {
+                        zeros = zeros && is_zero_eps(c, y_step);
+                    }
+                    correct_less = zeros;
+                }
+
 
                 if (correct) {
                     intersect.emplace_back(first_x, y_iter, z_iter);
@@ -121,8 +143,8 @@ vector<Point> InterSect::make_intersect() {
             y_iter -= y_step_ext;
         }
 
-        y_iter = min_y + 1;
-        while (y_iter >= min_y - 1) {
+        y_iter = min_y + 2;
+        while (y_iter >= min_y - 0.001) {
             if (1 >= float(y_iter * y_iter) * (t[1])) {
                 float ry = 1 - float(y_iter * y_iter) * t[1];
                 float first_x = sqrt(ry) / sqrt(t[0]);
@@ -152,17 +174,27 @@ vector<Point> InterSect::make_intersect() {
                 float z = z_great;
 
 
-                VF eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                                  y * z * second_quadric.YZ()
-                                  + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                                  second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                                  second_quadric.XX(), 0})
+                VF equation_coefs = VF{second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+                                       y * z * second_quadric.YZ()
+                                       + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+                                       second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+                                       second_quadric.XX(), 0};
+                VF eq = Equation(equation_coefs)
                         .solve();
 
                 for (float second_x : eq) {
                     if (equal_eps(second_x, x_great, intersect_epsilon))
                         correct = true;
                 }
+
+                if (!correct) {
+                    bool zeros = true;
+                    for (float c : equation_coefs) {
+                        zeros = zeros && is_zero_eps(c, y_step);
+                    }
+                    correct = zeros;
+                }
+
 
                 x_less = mul_reversed[0][0] * (-first_x) + additional[0]
                          + mul_reversed[1][0] * (y_iter)
@@ -179,17 +211,29 @@ vector<Point> InterSect::make_intersect() {
                 y = y_less;
                 z = z_less;
 
-                eq = Equation({second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
-                               y * z * second_quadric.YZ()
-                               + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
-                               second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
-                               second_quadric.XX(), 0})
+                equation_coefs = VF{second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+                                    y * z * second_quadric.YZ()
+                                    + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+                                    second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+                                    second_quadric.XX(), 0};
+
+                eq = Equation(equation_coefs)
                         .solve();
 
                 for (float second_x : eq) {
-                    if (equal_eps(second_x, x_less, edge_epsilon))
+                    if (equal_eps(second_x, x_less, intersect_epsilon))
                         correct_less = true;
                 }
+
+
+                if (!correct_less) {
+                    bool zeros = true;
+                    for (float c : equation_coefs) {
+                        zeros = zeros && is_zero_eps(c, y_step);
+                    }
+                    correct_less = zeros;
+                }
+
 
                 if (correct) {
                     intersect.emplace_back(first_x, y_iter, z_iter);
@@ -264,15 +308,27 @@ vector<Point> InterSect::make_intersect() {
                 VF eq = Equation(equation_coefs)
                         .solve();
 
+//                cout << "COORD: " << x_great << " " << y << " " << z << endl;
+//                for (float f : VF{second_quadric.D() + y * second_quadric.Y() + z * second_quadric.Z() +
+//                                  y * z * second_quadric.YZ()
+//                                  + y * y * second_quadric.YY() + z * z * second_quadric.ZZ(),
+//                                  second_quadric.X() + z * second_quadric.XZ() + y * second_quadric.XY(),
+//                                  second_quadric.XX(), 0}) {
+//                    cout << f << " ";
+//                }
+//                cout << endl;
+
                 for (float second_x : eq) {
+                    //cout << second_x << " ";
                     if (equal_eps(second_x, x_great, intersect_epsilon))
                         correct = true;
                 }
+                //cout << endl;
 
                 if (!correct) {
                     bool zeros = true;
                     for (float c : equation_coefs) {
-                        zeros = zeros && is_zero(c);
+                        zeros = zeros && is_zero_eps(c, y_step);
                     }
                     correct = zeros;
                 }
@@ -311,7 +367,7 @@ vector<Point> InterSect::make_intersect() {
                 if (!correct_less) {
                     bool zeros = true;
                     for (float c : equation_coefs) {
-                        zeros = zeros && is_zero(c);
+                        zeros = zeros && is_zero_eps(c, y_step);
                     }
                     correct_less = zeros;
                 }
@@ -345,10 +401,11 @@ vector<Point> InterSect::make_ph_intersect() {
 
     float intersect_epsilon = 1, edge_epsilon = 2.5;
 
-    float max_x = 150;
-    float min_x = -150;
+    float max_x = first_surface->max_z();
+    float min_x = -max_x;
 
-    float size_z = 50;
+    float size_z = first_surface->min_z();
+//    float size_z = 40;
 
     bool test = false;
 
@@ -392,17 +449,26 @@ vector<Point> InterSect::make_ph_intersect() {
             float x = x_great;
             float z = z_great;
 
+            VF equation_coefs = {second_quadric.D() + x * second_quadric.X() + z * second_quadric.Z() +
+                                 x * z * second_quadric.XZ()
+                                 + x * x * second_quadric.XX() + z * z * second_quadric.ZZ(),
+                                 second_quadric.Y() + z * second_quadric.YZ() + x * second_quadric.XY(),
+                                 second_quadric.YY(), 0};
 
-            VF eq = Equation({second_quadric.D() + x * second_quadric.X() + z * second_quadric.Z() +
-                              x * z * second_quadric.XZ()
-                              + x * x * second_quadric.XX() + z * z * second_quadric.ZZ(),
-                              second_quadric.Y() + z * second_quadric.YZ() + x * second_quadric.XY(),
-                              second_quadric.YY(), 0})
+            VF eq = Equation(equation_coefs)
                     .solve();
 
             for (float second_y : eq) {
                 if (equal_eps(second_y, val_great, intersect_epsilon))
                     correct = true;
+            }
+
+            if (!correct) {
+                bool zeros = true;
+                for (float c : equation_coefs) {
+                    zeros = zeros && is_zero_eps(c, y_step);
+                }
+                correct = zeros;
             }
 
             x_less = mul_reversed[0][0] * (x_iter) + additional[0]
@@ -420,16 +486,26 @@ vector<Point> InterSect::make_ph_intersect() {
             x = x_less;
             z = z_less;
 
-            eq = Equation({second_quadric.D() + x * second_quadric.X() + z * second_quadric.Z() +
-                           x * z * second_quadric.XZ()
-                           + x * x * second_quadric.XX() + z * z * second_quadric.ZZ(),
-                           second_quadric.Y() + z * second_quadric.YZ() + x * second_quadric.XY(),
-                           second_quadric.YY(), 0})
+            equation_coefs = {second_quadric.D() + x * second_quadric.X() + z * second_quadric.Z() +
+                              x * z * second_quadric.XZ()
+                              + x * x * second_quadric.XX() + z * z * second_quadric.ZZ(),
+                              second_quadric.Y() + z * second_quadric.YZ() + x * second_quadric.XY(),
+                              second_quadric.YY(), 0};
+
+            eq = Equation(equation_coefs)
                     .solve();
 
             for (float second_y : eq) {
                 if (equal_eps(second_y, val_less, edge_epsilon))
                     correct_less = true;
+            }
+
+            if (!correct_less) {
+                bool zeros = true;
+                for (float c : equation_coefs) {
+                    zeros = zeros && is_zero_eps(c, y_step);
+                }
+                correct_less = zeros;
             }
 
             if (correct) {

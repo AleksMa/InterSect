@@ -301,6 +301,18 @@ QuadricEquation SurfaceEquation::canonizate() {
         }
     }
 
+    if (not_zero(temporary.X()) && not_zero(temporary.YY()) && not_zero(temporary.ZZ())) {
+        swap(mul_finally[0], mul_finally[2]);
+        swap(temporary.XX(), temporary.ZZ());
+        swap(temporary.X(), temporary.Z());
+    }
+
+    if (not_zero(temporary.XX()) && not_zero(temporary.Y()) && not_zero(temporary.ZZ())) {
+        swap(mul_finally[1], mul_finally[2]);
+        swap(temporary.YY(), temporary.ZZ());
+        swap(temporary.Y(), temporary.Z());
+    }
+
     if (not_zero(temporary.XX()) && not_zero(temporary.YY()) && not_zero(temporary.Z())) {
         // Paraboloid
         if (!equal(1, abs(temporary.Z()))) {

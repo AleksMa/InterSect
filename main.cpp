@@ -300,7 +300,7 @@ void display(GLFWwindow *window) {
 
             for (int i = 0; i < 3; ++i) {
                 for (int j = 0; j < 3; ++j) {
-                    mulm[4 * i + j] = first_equation->get_mul_matrix()[i][j];
+                    mulm[4 * i + j] = first_equation->get_mul_matrix()[j][i];   // transp
                 }
                 mulm[12 + i] = first_equation->get_additional_vector()[i];
             }

@@ -19,14 +19,16 @@ vector<Point> ParaboloidHyperbolic::make_vertices() {
                           0,
                           left
     );
-    for (int j = left; j > -size_z; j -= N) {
+    int l;
+    for (l = left; l > -size_z; l -= N) {
         N += 3;
         K++;
         vertices.emplace_back(-size_x,
-                              sqrt(left - j) * B,
-                              j
+                              sqrt(left - l) * B,
+                              l
         );
     }
+    size_z = -l - N;
     for (int i = -size_x + M; i <= size_x; i += M) {    // x
         N = 1;
         // xx / aa - yy / bb = zz
@@ -43,10 +45,6 @@ vector<Point> ParaboloidHyperbolic::make_vertices() {
                                   sqrt(left - (float) j) * B,
                                   j
             );
-//            vertices.emplace_back(i,
-//                                  -sqrt(left - j) / B,
-//                                  j
-//            );
         }
     }
     return vertices;
@@ -82,9 +80,9 @@ vector<Point> ParaboloidHyperbolic::make_mash() {
 }
 
 float ParaboloidHyperbolic::max_z() {
-    return max;
+    return size_x;
 }
 
 float ParaboloidHyperbolic::min_z() {
-    return -200;
+    return size_z;
 }
