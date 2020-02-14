@@ -247,17 +247,17 @@ vector<Point> InterSect::make_intersect() {
         z_iter -= z_step_ext;
     }
 
-    for (int k = 0; k < additional.size(); ++k) {
-        cout << additional[k] << " ";
-    }
-    cout << endl;
-
-    for (int l = 0; l < 3; ++l) {
-        for (int i = 0; i < 3; ++i) {
-            cout << mul[l][i] << " ";
-        }
-        cout << endl;
-    }
+//    for (int k = 0; k < additional.size(); ++k) {
+//        cout << additional[k] << " ";
+//    }
+//    cout << endl;
+//
+//    for (int l = 0; l < 3; ++l) {
+//        for (int i = 0; i < 3; ++i) {
+//            cout << mul[l][i] << " ";
+//        }
+//        cout << endl;
+//    }
 
     z_iter = max_z;
 
@@ -523,17 +523,17 @@ vector<Point> InterSect::make_ph_intersect() {
         x_iter += z_step_ext;
     }
 
-    for (int k = 0; k < additional.size(); ++k) {
-        cout << additional[k] << " ";
-    }
-    cout << endl;
-
-    for (int l = 0; l < 3; ++l) {
-        for (int i = 0; i < 3; ++i) {
-            cout << mul[l][i] << " ";
-        }
-        cout << endl;
-    }
+//    for (int k = 0; k < additional.size(); ++k) {
+//        cout << additional[k] << " ";
+//    }
+//    cout << endl;
+//
+//    for (int l = 0; l < 3; ++l) {
+//        for (int i = 0; i < 3; ++i) {
+//            cout << mul[l][i] << " ";
+//        }
+//        cout << endl;
+//    }
 
     return intersect;
 }
